@@ -1,0 +1,25 @@
+{
+  "name": "tierlist-maker",
+  "version": "1.0.0",
+  "description": "Helps a user author a TierVibe tier list end-to-end and produce a .tiervibe.json they import at https://tiervibe.com/t/import. Interviews the user, sets up tiers, drafts cards, writes markdown explanations. No server calls, no login until the final step.",
+  "author": { "name": "TierVibe", "url": "https://tiervibe.com" },
+  "homepage": "https://tiervibe.com/t/import",
+  "license": "MIT",
+  "keywords": ["tier-list", "tierlist", "tier", "ranking", "tiervibe", "ranking-maker"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "TierList Maker",
+    "shortDescription": "One prompt -> a publish-ready TierVibe tier list, with commentary on every card.",
+    "longDescription": "Interviews the user, sets up tiers (henz/love/custom presets + global brightness), drafts cards (text with coordinated colors or image placeholders), writes markdown commentary on each card, and emits a .tiervibe.json the user imports at tiervibe.com/t/import. No server calls, no login until the final step.",
+    "developerName": "TierVibe",
+    "category": "Productivity",
+    "capabilities": ["Interactive", "Read", "Write"],
+    "websiteURL": "https://tiervibe.com/",
+    "logo": "./assets/logo.svg",
+    "logoDark": "./assets/logo.svg",
+    "composerIcon": "./assets/logo.svg",
+    "brandColor": "#181818",
+    "defaultPrompt": ["Make a tier list for AI coding models", "Give AI coding models a tier list", "Rank these items into tiers"],
+    "screenshots": []
+  }
+}
