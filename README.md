@@ -4,6 +4,25 @@ A portable Agent Skills plugin that helps a user author a **TierVibe** tier list
 
 The agent does all the work (interview, tiers, cards, explanations) and outputs one local file. Nothing touches the TierVibe server until the user clicks **发布 (Publish)** in the editor — login only comes up at that final import step.
 
+## Demo
+
+![TierList Maker demo](docs/tierlist-demo.png)
+
+**One prompt → a publish-ready TierList, with commentary on every card.**
+
+Ask the agent something like *"make a tier list for AI coding models"* and it runs the whole workflow for you:
+
+1. Interviews the topic and tier count (henz / love / custom presets).
+2. Sets up the tiers — names, title-bar colors, the board's global brightness.
+3. Drafts every card (text cards with coordinated colors, or image placeholders).
+4. Writes a markdown **commentary (讲解)** on each card — the part that makes a tier list worth reading.
+5. Emits a single `.tiervibe.json` and points you to `https://tiervibe.com/t/import`.
+6. You drag the cards into your final order and hit 发布. Login only happens here, at the last step.
+
+No image hunting, no manual card entry, no blank cards. The agent does the labor; you keep the judgment.
+
+> 一键用 AI 做出带讲解的高质量 TierList:给 agent 一句话(例如「给 AI 编程模型做个 tier list」),它问清题材和层级、设好配色、建好卡片、给每张卡写 markdown 讲解,最后产出一个 `.tiervibe.json`;你打开 tiervibe.com/t/import 导入、拖拽排序、发布即可。登录只在最后这步。
+
 ## Repo layout (dual marketplace)
 
 This repo ships **two** marketplace catalogs so the same plugin installs on both Claude Code and Codex/ChatGPT-style agent tools:
