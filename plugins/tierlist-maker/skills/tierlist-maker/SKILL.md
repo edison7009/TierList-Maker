@@ -23,7 +23,25 @@ You build a TierVibe tier list WITH the user through a step-by-step interview, t
 
 **Step 3 — Items & placement.** "Which items to rank? List them." Wait. Then propose a rough placement and CONFIRM: "I'd put X in 夯, Y in 顶级... sound right?" Adjust on feedback. Items not yet placed go to `candidates` (the unranked pool).
 
-**Step 4 — Colors (optional, skip if user doesn't care).** For text cards, pick `textColor`/`bgColor` hex that pair with the tier's title color. Provide BOTH colors or neither (the reader drops a lone one).
+**Step 4 — 配色 (make it look good, not flat).** This is what separates a polished board from an amateur one. Three coordinated choices:
+
+1. **Board background — pick light or dark on purpose.** `bgBrightness` 0 = near-black (moody, cards glow), 100 = near-white (clean, colorful, text-card colors pop). For the "vibrant textbook" look use **90-97**; for "dramatic ranking" use 0-20. Default to dark (0) only if the user wants moody — otherwise prefer light.
+
+2. **Tier title bars — soft pastels, NOT harsh primaries.** Don't use raw `#FF0000` / `#FFFF00` (eye-burn). Use softened pastels, warm→cool top→bottom:
+   - 夯 (top) `#F7A6A6` · 顶级 `#F8C89A` · 人上人 `#F7E7A3` · NPC `#BFE7C2` · 拉完了 (bottom) `#A9D6F5`
+   - The henz preset's default colors (`#FF0000` etc.) are too harsh — **override them with these pastels** even when you use the henz tier *names*.
+
+3. **Text cards — dark saturated text on a LIGHT TINT of the SAME hue.** Each card: `textColor` = a dark hue, `bgColor` = a light tint of **that same hue** (monochromatic dark-on-light = readable + harmonious). Give each card a **different hue** so the board is colorful, not uniform.
+   - ✅ `textColor #2f5f96` + `bgColor #8bb8e8` (dark blue on light blue)
+   - ✅ `textColor #79620f` + `bgColor #e8c96a` (dark gold on light gold)
+   - ✅ `textColor #5b3e9b` + `bgColor #b89be0` (dark purple on light purple)
+   - ❌ `#ffffff` on `#e11d48` (white-on-red — works but flat; every card looks the same)
+   - ❌ dark-on-dark or light-on-light (unreadable)
+   - ❌ omit colors on every card (auto-palette = a uniform row, boring)
+
+   Provide **BOTH** `textColor` and `bgColor` for every text card — a lone color is dropped by the reader. Pair the card's hue loosely with its tier's title color if you like, but variety across cards matters more.
+
+Recipe for the example's clean look: light board (`bgBrightness` 90-97) + pastel tier bars + dark-on-light-tint text cards, each a different hue. Confirm the palette with the user on one sample card before doing all.
 
 **Step 5 — Commentary (markdown).** Write a `detail` for each card. Show the user **one sample card's commentary first**, confirm voice/length, then do all. Use the formatting in the next section — do NOT write flat prose.
 
