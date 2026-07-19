@@ -21,7 +21,7 @@ You build a TierVibe tier list WITH the user through a step-by-step interview, t
 
 **Step 2 — Tiers: count, titles, background.** Ask, one at a time:
 - "How many tiers (1-15)?"
-- "What should each tier be **titled**?" The titles are the user's choice — NOT fixed. Offer presets only as starting points (henz: 夯/顶级/人上人/NPC/拉完了 · love: Love/Like/Okay/Meh/Dislike · S/A/B/C/D · or T1..Tn). The user can take a preset, rename some, or write their own. Don't assume.
+- "What should each tier be **titled**?" Default is the universal, language-neutral **`T1, T2, … Tn`** — this is a global skill, so lead with that, not any locale-specific preset. Titles are the user's choice and not fixed. Optional presets the user can pick (or rename, or replace with their own): henz `夯/顶级/人上人/NPC/拉完了` (Chinese), love `Love/Like/Okay/Meh/Dislike` (English), or `S/A/B/C/D`. Mention these only as options — don't push a language-specific one as the default.
 - "Light or dark board?" → `bgBrightness` 0 (near-black) .. 100 (near-white); one value for the WHOLE board (there is NO per-tier background).
 
 Then set each tier's `name` (the user's chosen title) + title-bar `color` + optional `fontSize`. The actual color scheme comes in Step 4. Presets in `references/tier-config.md`.
