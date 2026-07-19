@@ -1,0 +1,15 @@
+{
+  "version": "1",
+  "plugins": [
+    {
+      "id": "tierlist-maker",
+      "tier": "official",
+      "displayName": "TierList Maker",
+      "version": "1.0.0",
+      "description": "Helps a user author a TierVibe tier list end-to-end and produce a .tiervibe.json they import at https://tiervibe.com/t/import. Interviews the user, sets up tiers, drafts cards, writes markdown explanations. No server calls, no login until the final step.",
+      "keywords": ["tier-list", "tierlist", "tier", "ranking", "tiervibe", "ranking-maker"],
+      "homepage": "https://tiervibe.com/t/import",
+      "source": "./plugins/tierlist-maker"
+    }
+  ]
+}
