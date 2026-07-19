@@ -43,7 +43,15 @@ Then set each tier's `name` (the user's chosen title) + title-bar `color` + opti
 
 Show the user ONE sample card's colors + one tier bar first, confirm the style reads right, then do all. If the user says "you pick / I don't care", default to a pastel light board.
 
-**Step 5 — Commentary (markdown).** Write a `detail` for each card. Show the user **one sample card's commentary first**, confirm voice/length, then do all. Use the formatting in the next section — do NOT write flat prose.
+**Step 5 — Commentary depth (ask first).** Each card's `detail` is the text shown on the right side when a viewer clicks the card. Ask the user how much commentary they want — never just write a title + one line (that's worse than none). Offer:
+
+1. **None** — a pure ranking is enough; skip `detail` on every card.
+2. **One line per card** — a single short sentence introducing each item.
+3. **A few bullet points per card** — concise summary, not deep.
+4. **Detailed per-card breakdown** — fuller reasoning per point, but keep each card's `detail` ≤ ~1000 chars (the platform caps the whole post's content at 2MB server-side; ~1000/card stays readable and safely under).
+5. or tell me your own approach (length/style).
+
+Wait for the pick. Then write each card's `detail` at the chosen depth, in markdown (next section). Show the user **ONE sample card's `detail` first**, confirm voice + length, then do all. Do NOT write flat prose — use the markdown formatting below.
 
 ## Commentary markdown (MUST follow)
 
