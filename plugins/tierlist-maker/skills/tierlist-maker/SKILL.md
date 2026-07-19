@@ -58,9 +58,8 @@ Lead each `detail` with a one-line verdict, then 1-3 short supporting sentences.
 
 ## Emit + auto-open (final step)
 
-1. Build the `.tiervibe.json` (schema: `references/data-schema.md`). Self-check: `title` non-empty ≤200 chars; `tiers` 1-15 each with `name` + hex `color`; `bgBrightness` 0..100; text cards have non-empty `text`; **no raw HTML in any `detail`**.
-2. Save it as `<slug>.tiervibe.json` in the working dir (backup).
-3. **Open the browser with the data in the URL:**
+1. Build the `.tiervibe.json` in memory (schema: `references/data-schema.md`). Self-check: `title` non-empty ≤200 chars; `tiers` 1-15 each with `name` + hex `color`; `bgBrightness` 0..100; text cards have non-empty `text`; **no raw HTML in any `detail`**.
+2. **Open the browser directly with the data in the URL** (no file saved, no drag):
    - UTF-8 base64-encode the JSON, then URL-encode that base64 string.
    - run one command to open it:
      - Windows: `start "" "https://tiervibe.com/t/import#data=<urlencoded-base64>"`
@@ -68,9 +67,15 @@ Lead each `detail` with a one-line verdict, then 1-3 short supporting sentences.
      - Linux: `xdg-open "https://tiervibe.com/t/import#data=<urlencoded-base64>"`
    - Use the `#data=` **hash fragment** (not a query `?`): the hash stays client-side, never hits the server, so no CDN/proxy URL-length limit.
    - The page auto-loads the board into the editor. **If the user isn't logged in, the site asks now — that's the only login step.** After login it returns and auto-loads.
-4. Tell the user: the board's open, drag the cards into final order, click **发布**.
+3. Tell the user: the board's open, drag the cards into final order, click **发布**.
 
-If the JSON is enormous (>~1.5 MB base64, rare — only with many long commentaries), the URL may be too long; fall back to telling the user to drag the saved `<slug>.tiervibe.json` onto `https://tiervibe.com/t/import`.
+Do NOT save a `.tiervibe.json` to disk — the URL already carries the data; a saved file is redundant clutter.
+
+## Revisions (user asks for changes after seeing it)
+
+When the user says "change X / move Y / rewrite this commentary", edit the JSON in memory and **re-run the same open command with the new base64**. A fresh browser tab opens, the new board auto-loads — the user uses the new tab, no need to close anything. Each edit = one re-open.
+
+Only if the JSON is enormous (>~1.5 MB base64, rare — many long commentaries) and the URL is too long: save `<slug>.tiervibe.json` once and tell the user to drag it onto `https://tiervibe.com/t/import` as a fallback. Otherwise never save a file.
 
 ## Reference files (load on demand)
 - `references/data-schema.md` — full `.tiervibe.json` format + validation rules. Read before emitting.
