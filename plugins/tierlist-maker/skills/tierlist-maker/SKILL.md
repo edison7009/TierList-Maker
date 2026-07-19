@@ -19,29 +19,28 @@ You build a TierVibe tier list WITH the user through a step-by-step interview, t
 
 **Step 1 — Topic.** "What's the list about?" (e.g. "AI coding models", "2006-2025 哪年我最喜欢"). Wait.
 
-**Step 2 — Tiers & background.** "How many tiers (1-15)? Which preset — henz (夯→拉完了, Chinese) / love (Love→Dislike, English) / custom?" Wait. Then set each tier's `name` + title-bar `color` (hex) + optional `fontSize`, and the **single global** `bgBrightness` (0 = near-black, 100 = near-white; one value for the whole board, there is NO per-tier background). Presets in `references/tier-config.md`.
+**Step 2 — Tiers: count, titles, background.** Ask, one at a time:
+- "How many tiers (1-15)?"
+- "What should each tier be **titled**?" The titles are the user's choice — NOT fixed. Offer presets only as starting points (henz: 夯/顶级/人上人/NPC/拉完了 · love: Love/Like/Okay/Meh/Dislike · S/A/B/C/D · or T1..Tn). The user can take a preset, rename some, or write their own. Don't assume.
+- "Light or dark board?" → `bgBrightness` 0 (near-black) .. 100 (near-white); one value for the WHOLE board (there is NO per-tier background).
+
+Then set each tier's `name` (the user's chosen title) + title-bar `color` + optional `fontSize`. The actual color scheme comes in Step 4. Presets in `references/tier-config.md`.
 
 **Step 3 — Items & placement.** "Which items to rank? List them." Wait. Then propose a rough placement and CONFIRM: "I'd put X in 夯, Y in 顶级... sound right?" Adjust on feedback. Items not yet placed go to `candidates` (the unranked pool).
 
-**Step 4 — 配色 (make it look good, not flat).** This is what separates a polished board from an amateur one. Three coordinated choices:
+**Step 4 — 配色 (ask the style first, then generate — don't copy a fixed palette).** Colors are the user's design space. ASK: "What color style/feel do you want?" Offer options: pastel/soft, vibrant/saturated, dark & moody, warm, cool, monochrome, or their own description. The user picks — then you generate a scheme that FITS that style. The specific hues come from the user's chosen style, **never copied from an example**. Follow these PRINCIPLES, not a hex list:
 
-1. **Board background — pick light or dark on purpose.** `bgBrightness` 0 = near-black (moody, cards glow), 100 = near-white (clean, colorful, text-card colors pop). For the "vibrant textbook" look use **90-97**; for "dramatic ranking" use 0-20. Default to dark (0) only if the user wants moody — otherwise prefer light.
+1. **Board background matches the style.** pastel/light/clean → `bgBrightness` 90-97; moody/dark/dramatic → 0-20. (Reconcile with whatever was picked in Step 2.)
 
-2. **Tier title bars — soft pastels, NOT harsh primaries.** Don't use raw `#FF0000` / `#FFFF00` (eye-burn). Use softened pastels, warm→cool top→bottom:
-   - 夯 (top) `#F7A6A6` · 顶级 `#F8C89A` · 人上人 `#F7E7A3` · NPC `#BFE7C2` · 拉完了 (bottom) `#A9D6F5`
-   - The henz preset's default colors (`#FF0000` etc.) are too harsh — **override them with these pastels** even when you use the henz tier *names*.
+2. **Tier title bars form a gentle gradient top→bottom** (e.g. warm at top → cool at bottom for a best→worst feel). Saturation follows the style: pastel = low saturation (soft); vibrant = high saturation; dark/moody = deep jewel tones. Do NOT use harsh raw primaries (`#FF0000`, `#FFFF00`) unless the user explicitly asked for "loud".
 
-3. **Text cards — dark saturated text on a LIGHT TINT of the SAME hue.** Each card: `textColor` = a dark hue, `bgColor` = a light tint of **that same hue** (monochromatic dark-on-light = readable + harmonious). Give each card a **different hue** so the board is colorful, not uniform.
-   - ✅ `textColor #2f5f96` + `bgColor #8bb8e8` (dark blue on light blue)
-   - ✅ `textColor #79620f` + `bgColor #e8c96a` (dark gold on light gold)
-   - ✅ `textColor #5b3e9b` + `bgColor #b89be0` (dark purple on light purple)
-   - ❌ `#ffffff` on `#e11d48` (white-on-red — works but flat; every card looks the same)
-   - ❌ dark-on-dark or light-on-light (unreadable)
-   - ❌ omit colors on every card (auto-palette = a uniform row, boring)
+3. **Text cards: dark saturated text on a LIGHT TINT of the SAME hue** (same-hue dark-on-light = readable + harmonious). Give each card a DIFFERENT hue so the board is varied, not a uniform row. The hue set should match the style (pastel style → muted hues; vibrant → saturated hues).
+   - principle: `textColor` dark + `bgColor` light, SAME hue.
+   - example (of the pastel style only — generate your own for other styles): `#2f5f96` text on `#8bb8e8` bg (dark blue / light blue).
+   - never: dark-on-dark, light-on-light (unreadable); white-on-saturated-red on every card (flat, all-same); omitting colors on every card (auto-palette = a boring uniform row).
+   - provide BOTH `textColor` and `bgColor` for every text card (a lone color is dropped by the reader).
 
-   Provide **BOTH** `textColor` and `bgColor` for every text card — a lone color is dropped by the reader. Pair the card's hue loosely with its tier's title color if you like, but variety across cards matters more.
-
-Recipe for the example's clean look: light board (`bgBrightness` 90-97) + pastel tier bars + dark-on-light-tint text cards, each a different hue. Confirm the palette with the user on one sample card before doing all.
+Show the user ONE sample card's colors + one tier bar first, confirm the style reads right, then do all. If the user says "you pick / I don't care", default to a pastel light board.
 
 **Step 5 — Commentary (markdown).** Write a `detail` for each card. Show the user **one sample card's commentary first**, confirm voice/length, then do all. Use the formatting in the next section — do NOT write flat prose.
 
