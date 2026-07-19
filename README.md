@@ -4,6 +4,16 @@ A portable Agent Skills plugin that helps a user author a **TierVibe** tier list
 
 The agent does all the work (interview, tiers, cards, explanations) and outputs one local file. Nothing touches the TierVibe server until the user clicks **发布 (Publish)** in the editor — login only comes up at that final import step.
 
+## About
+
+**TierList Maker** helps you build a high-quality tier list on [TierVibe](https://tiervibe.com) — through a step-by-step conversation with an AI agent, not by hand.
+
+- **Per-card commentary (讲解 mode).** Every card carries its own markdown explanation — switch cards and the commentary changes. Readers get real reasoning, not just a ranked row.
+- **Ask-then-generate.** The agent asks what you want (topic, tier titles, color style) one question at a time, then builds it. No fixed templates — your choices drive the design.
+- **Auto-opens the result.** When it's done, the agent opens the finished board in your browser. You log in (only then), drag to sort, publish.
+- **Works with the agents you already use** — Claude Code, ChatGPT, Codex, and any agentskills.io-compatible tool.
+- **Local until you publish.** Nothing touches the TierVibe server until you click 发布.
+
 ## Demo
 
 ![TierList Maker demo](docs/tierlist-demo.png)
