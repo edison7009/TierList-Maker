@@ -1,98 +1,87 @@
 ---
 name: tierlist-maker
-description: Helps a user author a TierVibe tier list end-to-end and produce a .tiervibe.json they import at tiervibe.com/t/import. Use when the user wants to make/create/build a tier list, rank items, put things into tiers (S/A/B/C, 夯/顶级/.../拉完了, Love/Like/Okay/Meh/Dislike), or make a "从夯到拉" list. Interviews the user, sets up tiers, drafts cards (text or image), writes markdown explanations, validates the file, and tells the user how to import it. No server calls, no login until the final step.
+description: Builds a TierVibe tier list through a step-by-step interview, then AUTO-OPENS it in the user's browser (no file drag). Use when the user wants to make/create/build/rank a tier list, put items into tiers (S/A/B/C, 夯/顶级/.../拉完了, Love/Like/Okay/Meh/Dislike), or make a "从夯到拉" list. Asks one question at a time, sets up tiers, drafts text cards, writes markdown commentary per card, then opens https://tiervibe.com/t/import#data=... so the board loads automatically. No server calls, no login until the final step.
 when_to_use: ["make a tier list", "create a tier list", "build a tier list", "rank these items", "tier list maker", "S A B C ranking", "从夯到拉", "夯到拉", "tier list for ...", "rank ... into tiers"]
 ---
 
-# TierList Maker
+# TierList Maker (TierVibe)
 
-You help the user author a **TierVibe tier list** and produce a single `.tiervibe.json` file that they import into the TierVibe editor. The whole point is to remove the manual labor (finding images, adding cards, writing explanations) — the user only does the final drag-to-sort and publish.
+You build a TierVibe tier list WITH the user through a step-by-step interview, then **auto-open the result in their browser**. The user logs in only at the end, drags the cards to sort, publishes.
 
-## The principle (read this first)
+## Non-negotiable rules (read first)
+1. **Ask ONE question at a time.** Wait for the answer. Never dump a full list in one shot.
+2. **Text cards by default.** Do NOT guess image URLs — broken images are the #1 failure. Only use an image card if the user hands you a real URL; otherwise text card.
+3. **Commentary must use real markdown** (`##`, `**`, `-`, `>`), not flat prose. Rules below.
+4. **Login is the last step only.** Never mention accounts/sign-in before the final "open browser" step.
+5. **Final step = open the browser with the data in the URL.** Not "save a file and drag it."
 
-- **Everything before "publish" is the user's local behavior.** Your job is to produce a *file*. You do NOT call any TierVibe API, do NOT upload anything, do NOT open a browser, do NOT require the user to log in until the very last step.
-- **Keep it simple.** Your only output is one JSON file on the user's disk. Minimal permissions, no network, no browser automation.
-- **Never mention login until Step 6.** Login happens naturally at import time (the TierVibe page asks if needed). Do not ask the user to log in, do not check auth, do not talk about accounts in Steps 1–5.
+## The interview (one question at a time)
 
-## The 6-step workflow
+**Step 1 — Topic.** "What's the list about?" (e.g. "AI coding models", "2006-2025 哪年我最喜欢"). Wait.
 
-Run this as a conversation. Ask before assuming. Keep the user in the loop on the creative choices.
+**Step 2 — Tiers & background.** "How many tiers (1-15)? Which preset — henz (夯→拉完了, Chinese) / love (Love→Dislike, English) / custom?" Wait. Then set each tier's `name` + title-bar `color` (hex) + optional `fontSize`, and the **single global** `bgBrightness` (0 = near-black, 100 = near-white; one value for the whole board, there is NO per-tier background). Presets in `references/tier-config.md`.
 
-### Step 1 — Interview the topic
-Find out:
-- What is the list about? (e.g. "AI coding models", "best ramen in Tokyo", "Haruki Murakami novels")
-- How many tiers (1–15)? If unsure, suggest 5.
-- Which preset, if any: **henz** (夯→拉完了, Chinese), **love** (Love→Dislike, English), or **custom** (user names every tier). See [references/tier-config.md](references/tier-config.md) for the exact preset colors/names.
-Tell the user: text cards are the most reliable; image cards are optional (they attach images themselves later if they want).
+**Step 3 — Items & placement.** "Which items to rank? List them." Wait. Then propose a rough placement and CONFIRM: "I'd put X in 夯, Y in 顶级... sound right?" Adjust on feedback. Items not yet placed go to `candidates` (the unranked pool).
 
-### Step 2 — Set up the tiers
-For each tier, decide:
-- `name` — the tier label (e.g. "夯", "S", "Love"). Keep ≤ 100 chars.
-- `color` — the **title-bar** hex color (e.g. `#FF0000`). Pick colors that read well together; presets give you a ready palette.
-- `fontSize` — optional. Default is 24; henz uses 72/56/36/48/36. Only set if the user wants custom sizing.
+**Step 4 — Colors (optional, skip if user doesn't care).** For text cards, pick `textColor`/`bgColor` hex that pair with the tier's title color. Provide BOTH colors or neither (the reader drops a lone one).
 
-Then set the **global** board background:
-- `bgBrightness` — a single number 0..100 for the WHOLE board (0 = near-black `#181818`, 100 = white). There is **no per-tier background** — do not invent one. This is the only background control. Default 0 if the user doesn't care.
+**Step 5 — Commentary (markdown).** Write a `detail` for each card. Show the user **one sample card's commentary first**, confirm voice/length, then do all. Use the formatting in the next section — do NOT write flat prose.
 
-See [references/tier-config.md](references/tier-config.md).
+## Commentary markdown (MUST follow)
 
-### Step 3 — Draft the cards
-For each item the user wants to rank, create a card and assign it to a tier (or to the unranked `candidates` pool):
+`detail` renders via `react-markdown` + `remark-gfm`. **Raw HTML is escaped (shown as text, not rendered).** Use:
 
-- **Text card** (most reliable, recommended): `{ "type": "text", "text": "GPT-4", "textColor": "#ffffff", "bgColor": "#e11d48" }`. Colors are optional — if you omit both, the editor auto-picks. You may coordinate card colors with the tier's title color for a cohesive look. See [references/text-cards.md](references/text-cards.md).
-- **Image card** (optional): `{ "type": "image", "imageUrl": "https://...", "label": "Claude" }`. The URL is a *suggestion/placeholder* — the user attaches the real image in the editor if they want (their local image, uploaded through the editor's normal flow). If you can't find a good URL, **use a text card instead**. Do not download or upload anything. See [references/text-cards.md](references/text-cards.md) for the image caveat.
+- `#` `##` `###` — headings
+- blank line between paragraphs
+- `**bold**`, `*italic*`, `~~strikethrough~~`
+- `- ` or `* ` bullets; `1. ` numbered
+- `> ` blockquote
+- `` `inline code` `` and ``` ``` fenced block ``` 
+- `[text](https://...)` links
+- `---` horizontal rule
+- GFM pipe `|` tables
 
-### Step 4 — Write explanations (the "讲解" mode)
-Each card may carry a `detail` field — markdown the reader sees on the published post. This is what makes a tier list worth reading. For each card (and optionally a short board intro), write 1–4 short paragraphs:
+**Do NOT use:** raw `<div>`/`<span>`/`<img>` HTML; `![alt](url)` image embeds (cards show their own images — don't embed in commentary); footnotes; math.
 
-- Plain text, headings (`#`/`##`/`###`), **bold**, *italic*, `code`, bullet/numbered lists, blockquotes, tables, links, horizontal rules.
-- **No raw HTML** — it is escaped and shown as text. **No image syntax** for rendering (the post renders cards separately).
-- Keep it tight and genuinely informative — why this item is in this tier.
+Lead each `detail` with a one-line verdict, then 1-3 short supporting sentences. Match the list's language (Chinese list → Chinese commentary). Empty/whitespace `detail` is dropped (fine — not every card needs one).
 
-Full rules in [references/explanations.md](references/explanations.md).
+**Example (good):**
+```markdown
+## 夯
+北京奥运 + 神舟七号太空漫步,这一年让无数人热血沸腾。
 
-### Step 5 — Emit and self-check the file
-Write one file, `<topic-slug>.tiervibe.json` (e.g. `ai-coding-models.tiervibe.json`), to the user's current working directory, following [references/data-schema.md](references/data-schema.md) exactly.
+- 悲喜交织:汶川地震同一年
+- 记忆最深的一年
+```
 
-Before finishing, self-check:
-- `title` is non-empty, ≤ 200 chars.
-- `tiers` is a non-empty array, length 1–15.
-- Every tier has `name` + hex `color`.
-- `bgBrightness` (if present) is 0..100.
-- Every text card has non-empty `text`; every image card has an http(s) `imageUrl`.
-- No raw HTML inside any `detail`.
+**Bad (flat prose — do not do this):** "北京奥运神舟七号太空漫步这一年让无数人热血沸腾但汶川地震也让整个国家心碎。"
 
-Print the absolute path of the file you wrote and a 3–5 line summary of the list (title, # tiers, # cards, # with explanations).
+## Emit + auto-open (final step)
 
-### Step 6 — Final step (NOW mention import + login)
-Tell the user, in their language:
+1. Build the `.tiervibe.json` (schema: `references/data-schema.md`). Self-check: `title` non-empty ≤200 chars; `tiers` 1-15 each with `name` + hex `color`; `bgBrightness` 0..100; text cards have non-empty `text`; **no raw HTML in any `detail`**.
+2. Save it as `<slug>.tiervibe.json` in the working dir (backup).
+3. **Open the browser with the data in the URL:**
+   - UTF-8 base64-encode the JSON, then URL-encode that base64 string.
+   - run one command to open it:
+     - Windows: `start "" "https://tiervibe.com/t/import#data=<urlencoded-base64>"`
+     - macOS: `open "https://tiervibe.com/t/import#data=<urlencoded-base64>"`
+     - Linux: `xdg-open "https://tiervibe.com/t/import#data=<urlencoded-base64>"`
+   - Use the `#data=` **hash fragment** (not a query `?`): the hash stays client-side, never hits the server, so no CDN/proxy URL-length limit.
+   - The page auto-loads the board into the editor. **If the user isn't logged in, the site asks now — that's the only login step.** After login it returns and auto-loads.
+4. Tell the user: the board's open, drag the cards into final order, click **发布**.
 
-1. Open **https://tiervibe.com/t/import** in their browser.
-2. Click the drop zone and choose the `.tiervibe.json` you just wrote (give the path).
-3. **If not logged in, the site asks them to log in now** — that's expected and is the only time login comes up. (Google one-click or email.)
-4. The list opens in the editor with all tiers, cards, and explanations filled in.
-5. **Drag the cards to sort them** (this is the part only the user can do), then click **发布** (Publish).
-
-Do NOT mention login, accounts, or sign-in anywhere before this step.
+If the JSON is enormous (>~1.5 MB base64, rare — only with many long commentaries), the URL may be too long; fall back to telling the user to drag the saved `<slug>.tiervibe.json` onto `https://tiervibe.com/t/import`.
 
 ## Reference files (load on demand)
-- [references/data-schema.md](references/data-schema.md) — the full `.tiervibe.json` format with all fields, types, limits, and validation rules. **Read this before Step 5.**
-- [references/tier-config.md](references/tier-config.md) — the henz / love / default presets (tier names, colors, font sizes, bgBrightness).
-- [references/text-cards.md](references/text-cards.md) — text-card color protocol and the image-card caveat.
-- [references/explanations.md](references/explanations.md) — the allowed markdown subset and limits.
-- [references/import-flow.md](references/import-flow.md) — exactly what the user sees at /t/import (for your Step 6 wording).
+- `references/data-schema.md` — full `.tiervibe.json` format + validation rules. Read before emitting.
+- `references/tier-config.md` — henz / love / default presets (names, colors, font sizes, bgBrightness).
+- `references/text-cards.md` — text-card color protocol + why guessed image URLs break.
+- `references/explanations.md` — markdown deep-dive + limits.
+- `references/import-flow.md` — what the user sees at /t/import (for your wording).
+- `templates/` — blank / henz-5tier / text-only skeletons.
+- `examples/ai-models-tierlist.md` — a full worked run.
 
-## Templates (copy and fill)
-- [templates/blank.tiervibe.json](templates/blank.tiervibe.json) — minimal skeleton.
-- [templates/henz-5tier.tiervibe.json](templates/henz-5tier.tiervibe.json) — 5-tier henz preset, text cards.
-- [templates/text-only.tiervibe.json](templates/text-only.tiervibe.json) — pure text cards, the most reliable form.
-
-## Worked example
-- [examples/ai-models-tierlist.md](examples/ai-models-tierlist.md) — a full sample run (AI coding models) showing the interview and the resulting JSON.
-
-## Hard rules
-- Output exactly one `.tiervibe.json`. No other files unless the user asks.
-- Do not call any URL, do not upload, do not open a browser, do not run code that touches the network — except reading the user's own files if they point you to images.
-- Login is a Step-6 topic only. Never earlier.
-- No per-tier background field exists. Use the single `bgBrightness` only.
-- Keep SKILL scope: if the user asks for something this skill doesn't cover (e.g. editing an existing post, deleting, social features), say this skill only creates new lists via import.
+## Out of scope
+- Editing/deleting existing posts, social features → say "this skill only creates new lists."
+- Per-tier background colors → not supported; only the single `bgBrightness`.
+- Generating/uploading images → user attaches images in the editor if they want.
