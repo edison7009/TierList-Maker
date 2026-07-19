@@ -53,15 +53,29 @@ TierList-Maker/
 Add this repo as a marketplace, then install the plugin:
 
 ```
-/plugin marketplace add <your-github-org>/TierList-Maker
-/plugin install tierlist-maker@tiervibe-tierlist
+/plugin marketplace add edison7009/TierList-Maker
+/plugin install tierlist-maker@tiervibe-com
 ```
 
-Skill is invoked as `/tiervibe-tierlist:tierlist-maker` or auto-loads on triggers like "make a tier list for ...".
+Skill auto-loads on triggers like "make a tier list for ...", or invoke as `/tiervibe-com:tierlist-maker`.
 
-## Install — Codex / ChatGPT-style
+## Install — ChatGPT
 
-The repo contains `.agents/plugins/marketplace.json`. Add it per your tool's marketplace-add command, then enable the `tierlist-maker` plugin. The same `SKILL.md` drives the behavior.
+1. Open ChatGPT → **插件** (Plugins).
+2. 右上角点 **「⬇️」**(下载图标).
+3. 选 **添加插件市场** (Add plugin marketplace).
+4. 粘贴仓库地址:`https://github.com/edison7009/TierList-Maker.git`
+5. 确认后,`tierlist-maker` 出现在插件列表,启用即可.
+
+然后在对话里说"给 X 做个 tier list"触发;AI 一步步问你(标题/风格/项),最后自动打开 tiervibe.com 显示榜单,你拖拽排序、发布。
+
+## Install — Codex (CLI)
+
+The repo ships `.agents/plugins/marketplace.json` (Codex schema). Add and enable:
+
+```
+codex plugin marketplace add edison7009/TierList-Maker
+```
 
 ## How it works (the bridge on the TierVibe side)
 
