@@ -15,6 +15,7 @@ You build a TierVibe tier list WITH the user through a step-by-step interview, t
 4. **Login is the last step only.** Never mention accounts/sign-in before the final "open browser" step.
 5. **Final step = open the browser with the data in the URL.** Not "save a file and drag it."
 6. **Never railroad into a fixed 1/2 choice.** When you offer options (presets, styles, colors, anything), ALWAYS end with an open escape — "or tell me your own / 或者你说说你想要的别的". The user can describe freely in their own words; adapt to whatever they say. Do not force a pick from a numbered list.
+7. **Open the USER'S DEFAULT system browser — never an agent's built-in/headless browser.** This URL is for a human to click around in: it needs the user's real browser (Google Chrome / Edge / Safari / Firefox — whatever they set as the OS default), so it carries their cookies, logins, bookmarks, and muscle memory. Do NOT open it via playwright/puppeteer/a headless instance/the agent tool's embedded browser — those have no login session and break the "log in at the last step" flow. Use the OS open command only (next section).
 
 ## The interview (one question at a time)
 
@@ -87,10 +88,11 @@ Lead each `detail` with a one-line verdict, then 1-3 short supporting sentences.
 1. Build the `.tiervibe.json` in memory (schema: `references/data-schema.md`). Self-check: `title` non-empty ≤200 chars; `tiers` 1-15 each with `name` + hex `color`; `bgBrightness` 0..100; text cards have non-empty `text`; **no raw HTML in any `detail`**.
 2. **Open the browser directly with the data in the URL** (no file saved, no drag):
    - UTF-8 base64-encode the JSON, then URL-encode that base64 string.
-   - run one command to open it:
+   - run ONE OS open command — this launches the user's **default system browser** (Chrome / Edge / Safari / Firefox), with their real cookies & login session:
      - Windows: `start "" "https://tiervibe.com/t/import#data=<urlencoded-base64>"`
      - macOS: `open "https://tiervibe.com/t/import#data=<urlencoded-base64>"`
      - Linux: `xdg-open "https://tiervibe.com/t/import#data=<urlencoded-base64>"`
+   - **Do NOT** open it via playwright/puppeteer/a headless instance/the agent tool's embedded browser — those have no login session and break the "log in at the last step" flow. The OS `start`/`open`/`xdg-open` command is the only correct way (see rule 7).
    - Use the `#data=` **hash fragment** (not a query `?`): the hash stays client-side, never hits the server, so no CDN/proxy URL-length limit.
    - The page auto-loads the board into the editor. **If the user isn't logged in, the site asks now — that's the only login step.** After login it returns and auto-loads.
 3. Tell the user: the board's open, drag the cards into final order, click **发布**.
