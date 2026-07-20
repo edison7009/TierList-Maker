@@ -28,9 +28,10 @@ You build a TierVibe tier list WITH the user through a step-by-step interview, t
   - If the user wants category-style titles, one short word each (e.g. `Fruit`, `Meat`, `Grain`) — not a phrase.
   - Never a long title like `当前人类长寿最科学的方案` on a tier bar — it wraps/clips. Save long descriptions for the post **title** field, not the tier bar.
   - Optional presets the user can pick/rename/replace: henz `夯/顶级/人上人/NPC/拉完了` (Chinese), love `Love/Like/Okay/Meh/Dislike` (English), `S/A/B/C/D`. Mention only as options — don't push a locale-specific default.
-- "Light or dark board?" → `bgBrightness` 0 (near-black) .. 100 (near-white); one value for the WHOLE board (there is NO per-tier background).
 
-Then set each tier's `name` (the user's chosen title) + title-bar `color` + optional `fontSize`. The actual color scheme comes in Step 4. Presets in `references/tier-config.md`.
+(Don't ask "light or dark board" here — `bgBrightness` is derived in Step 4 from the card colors, not chosen separately.)
+
+Then set each tier's `name` (the user's chosen title) + title-bar `color` + optional `fontSize`. Presets in `references/tier-config.md`.
 
 **Step 3 — Items & placement.** "Which items to rank? List them." Wait. Then propose a rough placement and CONFIRM: "I'd put X in 夯, Y in 顶级... sound right?" Adjust on feedback. Items not yet placed go to `candidates` (the unranked pool).
 
