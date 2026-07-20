@@ -44,10 +44,11 @@ Then set each tier's `name` (the user's chosen title) + title-bar `color` + opti
 
 2. **Tier title bars form a gentle gradient top→bottom** (e.g. warm at top → cool at bottom for a best→worst feel). Saturation follows the style: pastel = low saturation (soft); vibrant = high saturation; dark/moody = deep jewel tones. Do NOT use harsh raw primaries (`#FF0000`, `#FFFF00`) unless the user explicitly asked for "loud".
 
-3. **Text cards: dark saturated text on a LIGHT TINT of the SAME hue** (same-hue dark-on-light = readable + harmonious). Give each card a DIFFERENT hue so the board is varied, not a uniform row. The hue set should match the style (pastel style → muted hues; vibrant → saturated hues).
-   - principle: `textColor` dark + `bgColor` light, SAME hue.
-   - example (of the pastel style only — generate your own for other styles): `#2f5f96` text on `#8bb8e8` bg (dark blue / light blue).
-   - never: dark-on-dark, light-on-light (unreadable); white-on-saturated-red on every card (flat, all-same); omitting colors on every card (auto-palette = a boring uniform row).
+3. **Text cards: freely themed colors — the only hard rule is READABILITY.** Any theme, any hue, any combination (warm, cool, festive, neon, monochrome, brand colors, whatever fits the topic). Give each card its own color identity so the board is varied. The ONE non-negotiable constraint: `textColor` and `bgColor` must have **enough brightness contrast** — one dark, the other light — so the text is legible.
+   - heuristic: pick the pair so one is clearly dark (luminance ~0.1-0.3) and the other clearly light (luminance ~0.7-0.95). If you squint and the two merge, it's unreadable — re-pick.
+   - this means BOTH "dark text on light bg" AND "light text on dark bg" are fine — pick whichever fits the theme. They just can't be both-dark or both-light.
+   - the board `bgBrightness` follows the OPPOSITE of the card `bgColor` (rule 1): if your card bgs are light, board goes dark; if your card bgs are dark, board goes light.
+   - never: dark-on-dark or light-on-light (unreadable); omitting colors on every card (auto-palette = a boring uniform row).
    - provide BOTH `textColor` and `bgColor` for every text card (a lone color is dropped by the reader).
 
 Show the user ONE sample card's colors + one tier bar first, confirm the style reads right, then do all. If the user says "you pick / I don't care", default to a pastel light board.
