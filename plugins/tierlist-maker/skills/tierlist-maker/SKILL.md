@@ -23,7 +23,11 @@ You build a TierVibe tier list WITH the user through a step-by-step interview, t
 
 **Step 2 — Tiers: count, titles, background.** Ask, one at a time:
 - "How many tiers (1-15)?"
-- "What should each tier be **titled**?" Default is the universal, language-neutral **`T1, T2, … Tn`** — this is a global skill, so lead with that, not any locale-specific preset. Titles are the user's choice and not fixed. Optional presets the user can pick (or rename, or replace with their own): henz `夯/顶级/人上人/NPC/拉完了` (Chinese), love `Love/Like/Okay/Meh/Dislike` (English), or `S/A/B/C/D`. Mention these only as options — don't push a language-specific one as the default.
+- "What should each tier be **titled**?" Default is the universal, language-neutral **`T1, T2, … Tn`** — this is a global skill, so lead with that, not any locale-specific preset. Titles are the user's choice and not fixed. Keep titles **SHORT** — the title bar is narrow:
+  - Best: a single token per tier — `T1`, `S`, `A`, `夯`, `Love`, `Best`, `Worst`.
+  - If the user wants category-style titles, one short word each (e.g. `Fruit`, `Meat`, `Grain`) — not a phrase.
+  - Never a long title like `当前人类长寿最科学的方案` on a tier bar — it wraps/clips. Save long descriptions for the post **title** field, not the tier bar.
+  - Optional presets the user can pick/rename/replace: henz `夯/顶级/人上人/NPC/拉完了` (Chinese), love `Love/Like/Okay/Meh/Dislike` (English), `S/A/B/C/D`. Mention only as options — don't push a locale-specific default.
 - "Light or dark board?" → `bgBrightness` 0 (near-black) .. 100 (near-white); one value for the WHOLE board (there is NO per-tier background).
 
 Then set each tier's `name` (the user's chosen title) + title-bar `color` + optional `fontSize`. The actual color scheme comes in Step 4. Presets in `references/tier-config.md`.
@@ -32,7 +36,11 @@ Then set each tier's `name` (the user's chosen title) + title-bar `color` + opti
 
 **Step 4 — 配色 (ask the style first, then generate — don't copy a fixed palette).** Colors are the user's design space. ASK: "What color style/feel do you want?" Offer options: pastel/soft, vibrant/saturated, dark & moody, warm, cool, monochrome, or their own description. The user picks — then you generate a scheme that FITS that style. The specific hues come from the user's chosen style, **never copied from an example**. Follow these PRINCIPLES, not a hex list:
 
-1. **Board background matches the style.** pastel/light/clean → `bgBrightness` 90-97; moody/dark/dramatic → 0-20. (Reconcile with whatever was picked in Step 2.)
+1. **Board background CONTRASTS the card backgrounds (reverse linkage).** `bgBrightness` (0..100) is NOT a free choice — derive it from the cards' `bgColor` so the board frames the cards, not fights them:
+   - Cards are **light-tinted** (the default: dark text on light-tint bg, e.g. `#2f5f96` text / `#8bb8e8` bg) → board goes **dark** (`bgBrightness` 0-15). Light cards pop against a dark board.
+   - Cards are **dark-saturated** (light text on dark bg, e.g. `#8bb8e8` text / `#2f5f96` bg) → board goes **light/near-white** (`bgBrightness` 90-97). Dark cards pop against a light board.
+   - i.e. card-bg brightness and board brightness are **opposite** — pick the card scheme first, then set `bgBrightness` to the opposite end. Don't ask the user separately for "light or dark board" in Step 2 — it's decided here by the card colors.
+   - The user's Step 2 answer ("light/dark feel") is the STYLE hint (moody vs clean); the ACTUAL `bgBrightness` value follows the card-bg reverse rule above.
 
 2. **Tier title bars form a gentle gradient top→bottom** (e.g. warm at top → cool at bottom for a best→worst feel). Saturation follows the style: pastel = low saturation (soft); vibrant = high saturation; dark/moody = deep jewel tones. Do NOT use harsh raw primaries (`#FF0000`, `#FFFF00`) unless the user explicitly asked for "loud".
 
