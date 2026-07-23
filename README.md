@@ -33,6 +33,26 @@ Ask the agent something like *"make a tier list for AI coding models"* and it ru
 
 No image hunting, no manual card entry, no blank cards. The agent does the labor; you keep the judgment.
 
+## Case study — turn any reference page into a tier list
+
+You don't have to start from a blank topic. Hand the agent a **reference page** and it builds the board from that source.
+
+**Example: a 2026 running-shoe list for the Hruska Clinic.**
+
+1. **Install the skill** (see above), then pick a source you want to tier. For this example, the Hruska Clinic shoe list: `https://www.hruska-clinic.com/shoe-list/`.
+2. **Select the TierList-Maker skill** and feed it the reference — paste the URL (or drop the saved page as a file) into the conversation.
+3. **Say what you want**, e.g.:
+   > Make me a 2026 running-shoe tier list for the well-known American Hruska Clinic, with detailed commentary on every card.
+4. **The agent does the rest** — reads the reference, decides the tiers, fills in every shoe as a card, and writes a markdown commentary on each one explaining *why* it sits in that tier.
+5. **It auto-opens the result** in your browser at `/t/import`. You drag to sort and publish. Login only happens at that last step.
+
+Real results from this exact prompt:
+
+- English board → https://tiervibe.com/t/GqqVt2jAX1
+- 中文版榜单 → https://tiervibe.com/t/Htluzu9Trq
+
+No manual card entry, no blank cards, no copy-paste from the source — the agent turns the reference page into a readable, commentary-rich tier list end to end.
+
 ## Repo layout (dual marketplace)
 
 This repo ships **two** marketplace catalogs so the same plugin installs on both Claude Code and Codex/ChatGPT-style agent tools:
