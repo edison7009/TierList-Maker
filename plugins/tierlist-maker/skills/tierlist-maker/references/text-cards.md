@@ -1,10 +1,12 @@
 # Text & Image Cards
 
-## Text cards (recommended)
+## Text cards
 
 A text card is a small square showing a label. Most reliable — no network, no
-CORS, no missing-image risk. **Default to text cards** unless the user clearly
-needs an image.
+CORS, no missing-image risk. **Which mode (text vs image) you use is decided in
+Step 0 of the interview** (`SKILL.md`); this file covers the mechanics of each
+card type once that choice is made. When text mode is chosen — or when an image
+can't be cleanly obtained — use a text card.
 
 ### Color protocol
 - Provide `textColor` AND `bgColor` **together**, or **omit both**.

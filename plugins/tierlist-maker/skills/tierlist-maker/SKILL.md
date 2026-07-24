@@ -1,6 +1,6 @@
 ---
 name: tierlist-maker
-description: Builds a TierVibe tier list through a step-by-step interview, then AUTO-OPENS it in the user's browser (no file drag). Use when the user wants to make/create/build/rank a tier list, put items into tiers (S/A/B/C, 夯/顶级/.../拉完了, Love/Like/Okay/Meh/Dislike), or make a "从夯到拉" list. Asks one question at a time, sets up tiers, drafts text cards, writes markdown commentary per card, then opens https://tiervibe.com/t/import#data=... so the board loads automatically. No server calls, no login until the final step.
+description: Builds a TierVibe tier list through a step-by-step interview, then AUTO-OPENS it in the user's browser (no file drag). Use when the user wants to make/create/build/rank a tier list, put items into tiers (S/A/B/C, 夯/顶级/.../拉完了, Love/Like/Okay/Meh/Dislike), or make a "从夯到拉" list. Asks ONE question at a time — FIRST whether the user wants an image tier list or a text one. For image mode, priority is the user supplying images (public links or local files); AI image search/generation is the AI's own capability, not this skill's. Sets up tiers, drafts text or image cards, writes markdown commentary per card, then opens https://tiervibe.com/t/import#data=... so the board loads automatically. No server calls, no login until the final step.
 when_to_use: ["make a tier list", "create a tier list", "build a tier list", "rank these items", "tier list maker", "S A B C ranking", "从夯到拉", "夯到拉", "tier list for ...", "rank ... into tiers"]
 ---
 
@@ -10,7 +10,7 @@ You build a TierVibe tier list WITH the user through a step-by-step interview, t
 
 ## Non-negotiable rules (read first)
 1. **Ask ONE question at a time.** Wait for the answer. Never dump a full list in one shot.
-2. **Text cards by default.** Do NOT guess image URLs — broken images are the #1 failure. Only use an image card if the user hands you a real URL; otherwise text card.
+2. **Ask image-vs-text mode FIRST (Step 0).** Two card modes — image cards (a picture on each card) or text cards (a label on each card). Ask which the user wants before anything else; never assume text. For image cards use only a REAL `https://` URL the user supplied or you personally verified — never guess or fabricate a URL (broken images are the #1 failure). Local image files (`D:\…`, `file:`, `data:`, `blob:`) CANNOT be embedded in the `.tiervibe.json` — the reader rejects them — so the local-images flow uses text-card placeholders + a manifest mapping each file to its item/tier/detail (Step 3½); the user swaps the placeholder for their local file in the editor after import.
 3. **Commentary must use real markdown** (`##`, `**`, `-`, `>`), not flat prose. Rules below.
 4. **Login is the last step only.** Never mention accounts/sign-in before the final "open browser" step.
 5. **Final step = open the browser with the data in the URL.** Not "save a file and drag it."
@@ -18,6 +18,15 @@ You build a TierVibe tier list WITH the user through a step-by-step interview, t
 7. **Open the USER'S DEFAULT system browser — never an agent's built-in/headless browser.** This URL is for a human to click around in: it needs the user's real browser (Google Chrome / Edge / Safari / Firefox — whatever they set as the OS default), so it carries their cookies, logins, bookmarks, and muscle memory. Do NOT open it via playwright/puppeteer/a headless instance/the agent tool's embedded browser — those have no login session and break the "log in at the last step" flow. Use the OS open command only (next section).
 
 ## The interview (one question at a time)
+
+## Step 0 — Mode: image or text? (ask this first, before anything else)
+
+Ask ONE question: **图片版还是文字版?(image tier list, or text?)** Wait for the answer.
+
+- **Text version** — each card shows a label. Fastest, most reliable, no image hunting. Best for abstract items (model names, dish names, years, concepts). → skip Step 3½, go straight to Step 1.
+- **Image version** — each card shows a picture. Looks better, but you need an image for every item. Best when the image IS the point (a specific character, logo, photo). → you'll gather images in Step 3½ after the items are known, then continue through Steps 1→2→4→5 like text mode.
+
+State the trade-off, don't push one over the other. End with an open escape (rule 6): "或者你跟我说说你想怎么排 / or tell me what you have in mind". Whatever the user says, adapt.
 
 **Step 1 — Topic.** "What's the list about?" (e.g. "AI coding models", "2006-2025 哪年我最喜欢"). Wait.
 
@@ -34,6 +43,37 @@ You build a TierVibe tier list WITH the user through a step-by-step interview, t
 Then set each tier's `name` (the user's chosen title) + title-bar `color` + optional `fontSize`. Presets in `references/tier-config.md`.
 
 **Step 3 — Items & placement.** "Which items to rank? List them." Wait. Then propose a rough placement and CONFIRM: "I'd put X in 夯, Y in 顶级... sound right?" Adjust on feedback. Items not yet placed go to `candidates` (the unranked pool).
+
+## Step 3½ — Images (image mode ONLY; skip entirely for text mode)
+
+You need one image per item. **Priority: the user provides the images** — this is the only path fully inside this skill, and the most reliable. Image *finding/generation* (web search, AI image generation) is the AI's OWN capability and tooling, **NOT a feature of this skill** — be honest about that. If the AI can search/generate, it does so OUTSIDE this skill and returns here once images exist; if it can't, the user finds the images and comes back. Do NOT promise an image-search step as a skill feature.
+
+Ask ONE question: **"图片你准备好了吗?是哪种情况?"** and branch:
+
+**A. User has public https links** (图床 / Wikipedia / 官网图 etc.)
+- Have the user paste one URL per item. Verify each starts with `https://`.
+- Put each URL straight onto the card: `{ "type": "image", "imageUrl": "<url>", "label": "<item>", "detail": "..." }`.
+- Warn: external image hosts may taint the publish-time cover canvas (CORS); treat these as placeholders the user can swap in the editor for a guaranteed-clean cover.
+
+**B. User has the image files saved locally** (e.g. `1.png`, `2.png` on disk)
+- Local file paths can't go in the JSON (schema rejects `file:`/`data:`/`blob:`). So you do NOT read, encode, or embed the files — you never need to visually inspect them.
+- Instead, build a **manifest table** — your working source of truth. Ask the user, one item at a time, which file maps to which item/tier. Leave the `detail` column BLANK for now — it gets filled when Step 5 (commentary depth) runs later. Example:
+
+  | 文件 file | 条目 item | 层级 tier | 讲解 detail |
+  |---|---|---|---|
+  | 1.png | 苹果 | 夯 | _(filled in Step 5)_ |
+  | 2.png | 香蕉 | 顶级 | _(filled in Step 5)_ |
+
+  The manifest is a working doc — it does NOT go in the JSON. It exists so you can build the board without ever looking at the images, and so the user has a swap cheat-sheet after import.
+- Emit **text-card placeholders** in the JSON: each card `{ "type": "text", "text": "<item>", ... }` so the user can identify it in the editor by its label. (If the user also has a public URL for some items, use an image card for those and text placeholders for the rest.)
+- Hand the manifest to the user at the end. After import, they swap each placeholder card's image for the matching local file in the editor (the editor uploads it to the platform CDN — the only clean path for local images). The manifest is their swap cheat-sheet: "the card labeled 苹果 → use 1.png".
+
+**C. User doesn't have images yet / wants help finding them**
+- Be honest: whether you can search the web for images or generate them depends on YOUR OWN tools and capabilities, not on this skill. Don't promise a search step as a skill feature.
+- If you DO have web-search/vision tools: search per item (prefer stable, CORS-friendly hosts like Wikimedia Commons / official sites), show the user what you found, get confirmation — then it becomes branch A. Keep that search OUTSIDE these steps; the skill resumes once you have URLs.
+- If you DON'T: say so plainly, suggest the user find the images themselves (then branch A or B), and keep building the board with text-card placeholders so nothing is blocked. The user can add images in the editor anytime.
+
+In every image-mode branch, still run Steps 1, 2, 4, 5 (topic, tiers, colors, commentary). Image cards carry `detail` commentary exactly like text cards.
 
 **Step 4 — 配色 (ask the style first, then generate — don't copy a fixed palette).** Colors are the user's design space. ASK: "What color style/feel do you want?" Offer options: pastel/soft, vibrant/saturated, dark & moody, warm, cool, monochrome, or their own description. The user picks — then you generate a scheme that FITS that style. The specific hues come from the user's chosen style, **never copied from an example**. Follow these PRINCIPLES, not a hex list:
 
@@ -62,7 +102,7 @@ Show the user ONE sample card's colors + one tier bar first, confirm the style r
 4. **Detailed per-card breakdown** — fuller reasoning per point, but keep each card's `detail` ≤ ~1000 chars (the platform caps the whole post's content at 2MB server-side; ~1000/card stays readable and safely under).
 5. or tell me your own approach (length/style).
 
-Wait for the pick. Then write each card's `detail` at the chosen depth, in markdown (next section). Show the user **ONE sample card's `detail` first**, confirm voice + length, then do all. Do NOT write flat prose — use the markdown formatting below.
+Wait for the pick. Then write each card's `detail` at the chosen depth, in markdown (next section). Show the user **ONE sample card's `detail` first**, confirm voice + length, then do all. Do NOT write flat prose — use the markdown formatting below. If you're in image mode + branch B (local files), also fill the `detail` column of the manifest table here — same text goes on the card's `detail` and the manifest row.
 
 ## Commentary markdown (MUST follow)
 
@@ -127,4 +167,4 @@ Only if the JSON is enormous (>~1.5 MB base64, rare — many long commentaries) 
 ## Out of scope
 - Editing/deleting existing posts, social features → say "this skill only creates new lists."
 - Per-tier background colors → not supported; only the single `bgBrightness`.
-- Generating/uploading images → user attaches images in the editor if they want.
+- Finding/generating images → that's the AI's own capability, not this skill. The skill resumes once images are available (https URLs → image cards; local files → text-card placeholders + a manifest, swapped in the editor). The skill itself never downloads or uploads images.

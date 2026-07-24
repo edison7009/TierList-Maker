@@ -6,7 +6,10 @@ default example.
 
 ## The interview
 
-> **Agent**: What's the list about?
+> **Agent**: 图片版还是文字版?(image tier list, or text?)
+> **User**: Text — these are model names, a label is enough.
+> **Agent**: Got it — text mode, so we skip the image-gathering step. What's
+> the list about?
 > **User**: AI coding models.
 > **Agent**: How many tiers, and which preset? henz (夯→拉完了, 5 tiers),
 > love (Love→Dislike), or custom?
