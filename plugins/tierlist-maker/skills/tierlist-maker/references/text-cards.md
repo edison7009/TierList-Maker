@@ -21,9 +21,19 @@ can't be cleanly obtained — use a text card.
   "Color tips for cards".
 
 ### Sizing the text
-Keep `text` to a short label (a few words). The card auto-fits font size to the
-text length; very long text gets shrunk and clipped. If a card needs a long
-description, that belongs in `detail` (the explanation), not `text`.
+
+**Hard numbers: ≤6 CJK characters, ≤12 Latin characters.** "Keep it short" is too
+vague to act on. Past that the label wraps and the card's auto-fit shrinks it
+until it's hard to read — real examples that wrapped on a finished board:
+`美式橄榄球 NFL`, `滑雪 / 单板`, `NASCAR 赛车`.
+
+The card auto-fits font size to the text length, so a long label never overflows
+— it just goes small. When the full name doesn't fit:
+
+- put the **short form on the card** (`NFL`, `滑雪`, `NASCAR`)
+- put the **full name in `detail`**, where there's room for it
+
+If a card needs a description, that's `detail` (the explanation), never `text`.
 
 ## Image cards (optional, with a caveat)
 

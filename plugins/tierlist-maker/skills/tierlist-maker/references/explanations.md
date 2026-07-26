@@ -34,6 +34,29 @@ also help SEO: the post page server-renders card explanations as real text.
   "no explanation"). That's fine — not every card needs one.
 - Trim trailing whitespace; the reader trims, but keep it clean.
 
+## The default structure (use this unless you have a reason not to)
+
+Abstract advice like "lead with the verdict" gives uneven results across 20+
+cards. This concrete shape doesn't — it came out of a finished 27-card board
+where the right-hand explanation panel read cleanly on every card:
+
+```markdown
+## <tier> · <a 4-8 word verdict>
+<one sentence carrying the core fact or number>
+
+- <supporting point>
+- <supporting point>
+- <a tension: the controversy, the trend, or the counter-intuitive bit>
+```
+
+Why it holds up: the heading repeats the tier so the panel stands on its own, the
+lead sentence hands the reader the "why" immediately, and that third bullet is
+what stops every card from reading like an advertisement. Keep the same shape
+across all cards in one board — the consistency is most of what makes the panel
+look finished.
+
+Vary it when a card genuinely calls for it, not for the sake of variety.
+
 ## Example
 ```markdown
 ## Why this is 夯

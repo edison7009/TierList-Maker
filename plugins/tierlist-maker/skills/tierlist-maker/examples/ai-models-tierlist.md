@@ -51,8 +51,8 @@ No "light or dark board?" question here — `bgBrightness` gets derived in Step 
 > **User**: Vibrant, saturated.
 
 > **Agent**: 先给你看一张样卡和一条层级栏 —— 卡片是 `#ffffff` 字 + `#e11d48`
-> 底(深底浅字),层级栏 `#FF0000`。卡底偏深,所以整板背景走浅色
-> (`bgBrightness: 94`),深卡片压在浅板上更跳。这个感觉对吗?
+> 底(深底浅字),层级栏 `#FF0000`。整板背景走深色
+> (`bgBrightness: 6`),这种高饱和的卡压在深板上会「发光」。这个感觉对吗?
 > **User**: 对,就这样。
 
 **Step 5 — commentary depth**
@@ -71,7 +71,7 @@ Then the agent builds the JSON and runs the open command.
 ```json
 {
   "title": "AI 编程模型 — 从夯到拉",
-  "bgBrightness": 94,
+  "bgBrightness": 6,
   "layoutMode": "horizontal",
   "tiers": [
     {
@@ -154,9 +154,9 @@ Then, in Chinese to match the list:
 - All cards are text cards — zero network/CORS risk, import is instant.
 - Every text card carries **both** `textColor` and `bgColor` (Step 4 rule 3). A
   lone color would be dropped by the reader.
-- `bgBrightness: 94` is **derived**, not asked for: the card backgrounds are
-  dark-saturated, so the board goes light. Had the cards been light-tinted, the
-  board would have gone 0-15 instead.
+- `bgBrightness: 6` is **derived**, not asked for: dark is the default (Step 4
+  rule 1) and these saturated card colors glow against it. Only pale,
+  low-saturation cards would have flipped the board to 90-97.
 - Tier bars run warm→cool top to bottom, saturation high to match the "vibrant"
   style the user picked.
 - No `candidates` — the user ranked everything; an empty array is fine (or omit).

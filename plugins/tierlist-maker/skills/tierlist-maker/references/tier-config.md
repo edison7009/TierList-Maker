@@ -70,18 +70,37 @@ derive `bgBrightness` in Step 4.
 
 ## Choosing `bgBrightness`
 
-**`bgBrightness` is derived, not chosen.** `SKILL.md` Step 4 rule 1 is the source
-of truth: the board brightness is the **opposite** of the card backgrounds, so the
-board frames the cards instead of fighting them.
+**Dark by default; light is the exception.** `SKILL.md` Step 4 rule 1 is the
+source of truth. These two are not equally likely — it is not a symmetry:
 
-- Cards are **light-tinted** (dark text on a light-tint bg) → board goes **dark**,
-  `bgBrightness` 0-15.
-- Cards are **dark-saturated** (light text on a dark bg) → board goes
-  **light/near-white**, `bgBrightness` 90-97.
+- **Default: `bgBrightness` 0-10 (dark).** It's what a tier list is expected to
+  look like, and it matches TierVibe's own platform default — every list starts
+  dark, exactly one preset differs. Saturated and deep card colors glow here.
+- **Exception: 90-97 (light), only for pale low-saturation cards** (dark text on
+  a pastel bg). Those wash out on a dark board and genuinely need a light one.
+- **Saturated cards do NOT go on a near-white board.** An earlier version of this
+  rule said they should, purely by symmetry. In practice those blocks read
+  hard-edged and cheap and lose the glow — on a real finished board the author's
+  first move was to change a derived `94` straight back to black.
 
-Pick the card scheme first, then set `bgBrightness` to the opposite end. Do not
-ask the user for "light or dark board" as a separate question, and do not copy a
-value from a preset or an example.
+Do not ask the user for "light or dark board" as a separate question, and do not
+copy a value from a preset or an example.
+
+## Choosing `fontSize` (always set it)
+
+`fontSize` is the tier title-bar text size. It is optional in the schema, but
+**leave it out and you get a small default that authors immediately change** —
+in a real run the very first thing the author did after importing was raise every
+tier from 24 to 36. So always set it, and size it to the title:
+
+| Title length | `fontSize` |
+|---|---|
+| 1-2 chars (`T1`, `S`, `夯`) | 40-48 |
+| 3-4 chars (`人上人`, `Love`) | 32-36 |
+| 5+ chars | 24-28 — and suggest a shorter title; the bar is narrow |
+
+Default to **36** when in doubt. Don't copy 24 out of the love preset table below:
+those numbers are that preset's own styling, not a general default.
 
 For reference, the scale itself: 0 → `#181818` (near-black), 100 → `#F7F7F7`
 (near-white), linear gray in between; any integer 0..100 is valid.
