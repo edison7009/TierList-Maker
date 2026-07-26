@@ -1,8 +1,12 @@
 # Tier Presets & Colors
 
-The editor ships three presets. Pick one in Step 1, or go custom. A preset only
-sets **tier names + title-bar colors (+ font sizes for henz)** — it does NOT set
-the board background; you still set the single global `bgBrightness` yourself.
+The editor ships three presets. They come up in **Step 2** (tiers) as options the
+user may pick, rename, or replace — never as a default you push. Per `SKILL.md`
+Step 2, lead with the language-neutral `T1..Tn` instead.
+
+A preset only sets **tier names + title-bar colors (+ font sizes for henz)**. It
+does **not** set the board background: `bgBrightness` is derived in Step 4 from
+the card colors, never taken from a preset. See "Choosing `bgBrightness`" below.
 
 ## Default (no preset) — 15 tiers
 
@@ -43,8 +47,9 @@ A bold "从夯到拉" (best → worst) list. **henz is Chinese-only** for tier n
 | 5 | 拉完了 | `#FFFFFF` | 36 |
 
 Traditional Chinese (zh-Hant) names: 夯 / 頂級 / 人上人 / NPC / 拉完了.
-Default `bgBrightness` for henz is **50** (light gray-white) — set it unless the
-user says otherwise.
+
+The henz preset carries no board brightness of its own — derive `bgBrightness`
+from the card colors in Step 4 like any other list.
 
 ## love preset (Love → Dislike) — 5 tiers, English
 
@@ -58,20 +63,39 @@ A "My Faves" style list.
 | 4 | Meh | `#7FFF7F` | 24 |
 | 5 | Dislike | `#7FBFFF` | 24 |
 
-Uses the default palette colors. `bgBrightness` defaults to 0 (dark) unless the
-user says otherwise.
+Uses the default palette colors. Like henz, it carries no board brightness —
+derive `bgBrightness` in Step 4.
 
 ## Choosing `bgBrightness`
 
-- 0 → `#181818` (near-black). Default for most lists; cards pop.
-- 50 → mid-gray. henz uses this.
-- 100 → `#F7F7F7` (near-white). Use for light-themed content.
-- Any integer 0..100 in between is valid (linear gray).
+**`bgBrightness` is derived, not chosen.** `SKILL.md` Step 4 rule 1 is the source
+of truth: the board brightness is the **opposite** of the card backgrounds, so the
+board frames the cards instead of fighting them.
+
+- Cards are **light-tinted** (dark text on a light-tint bg) → board goes **dark**,
+  `bgBrightness` 0-15.
+- Cards are **dark-saturated** (light text on a dark bg) → board goes
+  **light/near-white**, `bgBrightness` 90-97.
+
+Pick the card scheme first, then set `bgBrightness` to the opposite end. Do not
+ask the user for "light or dark board" as a separate question, and do not copy a
+value from a preset or an example.
+
+For reference, the scale itself: 0 → `#181818` (near-black), 100 → `#F7F7F7`
+(near-white), linear gray in between; any integer 0..100 is valid.
 
 ## Color tips for cards
 
-- Coordinate a text card's `bgColor` with its tier's title `color` for a
-  cohesive look (e.g. tier `#FF0000`, card bg `#e11d48`).
-- Keep text readable: pair a dark `textColor` with a light `bgColor` and vice
-  versa. `#ffffff` text on a saturated bg works for most labels.
-- If unsure, **omit both colors** and let the editor auto-pick from its palette.
+- **Always provide `textColor` AND `bgColor` on every text card.** Omitting them
+  makes the editor auto-pick from its palette, which produces a flat, uniform row
+  — `SKILL.md` Step 4 rule 3 rules this out. (Providing only *one* of the two is
+  worse still: the reader drops both.)
+- Give each card its own color identity so the board reads as varied. Any theme,
+  any hue — warm, cool, neon, monochrome, brand colors, whatever fits the topic.
+- **The one hard rule is readability**: `textColor` and `bgColor` must differ
+  clearly in brightness — one around luminance 0.1-0.3, the other 0.7-0.95. Both
+  "dark text on light bg" and "light text on dark bg" are fine; both-dark or
+  both-light is not. If the two merge when you squint, re-pick.
+- Coordinating a card's `bgColor` with its tier's title `color` is a nice touch
+  for cohesion (e.g. tier `#FF0000`, card bg `#e11d48`) — but it is optional, and
+  it never overrides the readability rule.

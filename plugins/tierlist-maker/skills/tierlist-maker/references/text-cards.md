@@ -9,12 +9,16 @@ card type once that choice is made. When text mode is chosen — or when an imag
 can't be cleanly obtained — use a text card.
 
 ### Color protocol
-- Provide `textColor` AND `bgColor` **together**, or **omit both**.
-- The reader encodes them into the card's stored `imageUrl` as
+- **Provide `textColor` AND `bgColor` on every text card** — that's the Step 4
+  policy in `SKILL.md`. Omitting them is mechanically legal but hands the board to
+  the editor's auto-palette, which reads as a flat uniform row.
+- Colors are all-or-nothing: if you provide only one, the reader drops **both**
+  and falls back to the auto-palette. So: pair, or (reluctantly) neither.
+- The reader encodes the pair into the card's stored `imageUrl` as
   `text:<encoded>#<fgHex>#<bgHex>` (hex without `#`).
-- If you provide only one color, the reader drops both and the editor auto-picks
-  from its palette. So: pair or neither.
 - Hex colors: 3–8 hex digits, with or without leading `#`.
+- Readability is the hard constraint — see `references/tier-config.md` →
+  "Color tips for cards".
 
 ### Sizing the text
 Keep `text` to a short label (a few words). The card auto-fits font size to the

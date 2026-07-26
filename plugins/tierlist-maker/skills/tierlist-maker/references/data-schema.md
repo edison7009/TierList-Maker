@@ -79,10 +79,11 @@ Every card is one of two types:
 }
 ```
 - `text` is encoded into the editor's `text:<encoded>` card protocol.
-- **Colors come as a pair or not at all**: if you provide `textColor` you should
+- **Colors come as a pair or not at all**: if you provide `textColor` you must
   also provide `bgColor`, and vice versa. If you provide only one, the reader
-  drops both and the editor auto-picks colors from its palette. Cleanest path:
-  provide both, or neither.
+  drops both and the editor auto-picks from its palette.
+- Skill policy (`SKILL.md` Step 4 rule 3) is to **provide both on every text
+  card** — the auto-palette produces a flat, uniform row.
 - Keep `text` short (a label, not a paragraph). The card is a small square.
 
 ### Image card
@@ -117,9 +118,23 @@ Every card is one of two types:
 | text card `text` | non-empty |
 | image card `imageUrl` | non-empty, starts with `http://` or `https://` |
 | `detail` | trimmed; empty string is dropped (treated as "no explanation") |
+| **total cards** | **sum of every `tiers[].cards` plus `candidates` must be ≤ 200** — the reader rejects with `too many cards (N); max 200` |
 
 On any violation the import page shows the error message and stays on the page
 (nothing is imported, nothing is sent to the server). Fix the file and re-import.
+
+## Size limits when auto-opening via `#data=`
+
+The import page also accepts the board in the URL hash — `/t/import#data=<urlencoded-base64>`,
+which is how the skill hands off (see `SKILL.md`). Two caps apply there:
+
+- The reader rejects the payload past **2,000,000 characters** of URL-encoded base64.
+- Well before that, the **shell's command-line limit** binds. See the table in
+  `SKILL.md` → "Emit + auto-open"; the tight one is cmd.exe / Git Bash at 8,191
+  characters. Past your shell's ceiling, save the file and let the user drop it
+  on the import page instead.
+
+As a rule of thumb the URL runs about **1.4×** the JSON's UTF-8 byte count.
 
 ## What is NOT supported (do not emit)
 
