@@ -89,7 +89,9 @@ Add this repo as a marketplace, then install the plugin:
 /plugin install tierlist-maker@tiervibe-com
 ```
 
-Skill auto-loads on triggers like "make a tier list for ...", or invoke as `/tiervibe-com:tierlist-maker`.
+Skill auto-loads on triggers like "make a tier list for ...", or invoke as `/tierlist-maker:tierlist-maker`.
+
+(Plugin skills are namespaced by the **plugin** name, not the marketplace name — the plugin is `tierlist-maker` and its skill directory is `skills/tierlist-maker/`.)
 
 ## Install — ChatGPT
 
