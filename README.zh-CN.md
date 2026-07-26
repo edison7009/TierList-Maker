@@ -89,7 +89,9 @@ TierList-Maker/
 /plugin install tierlist-maker@tiervibe-com
 ```
 
-skill 在「给 X 做个 tier list」这类话触发自动加载,或用 `/tiervibe-com:tierlist-maker` 显式调用。
+skill 在「给 X 做个 tier list」这类话触发自动加载,或用 `/tierlist-maker:tierlist-maker` 显式调用。
+
+(插件 skill 的命名空间取的是 **plugin 名**而不是 marketplace 名 —— plugin 叫 `tierlist-maker`,skill 目录是 `skills/tierlist-maker/`。)
 
 ## 安装 — ChatGPT
 
