@@ -139,16 +139,29 @@ Lead each `detail` with a one-line verdict, then 1-3 short supporting sentences.
 
 ## Emit + auto-open (final step)
 
-1. Build the `.tiervibe.json` in memory (schema: `references/data-schema.md`). Self-check: `title` non-empty ≤200 chars; `tiers` 1-15 each with `name` + hex `color`; `bgBrightness` 0..100; text cards have non-empty `text`; **no raw HTML in any `detail`**.
+1. Build the `.tiervibe.json` in memory (schema: `references/data-schema.md`). Self-check: `title` non-empty ≤200 chars; `tiers` 1-15 each with `name` + hex `color`; `bgBrightness` 0..100; text cards have non-empty `text`; **total cards across all tiers + `candidates` ≤ 200**; **no raw HTML in any `detail`**.
 2. **Open the browser directly with the data in the URL** (no file saved, no drag):
    - UTF-8 base64-encode the JSON, then URL-encode that base64 string.
    - run ONE OS open command — this launches the user's **default system browser** (Chrome / Edge / Safari / Firefox), with their real cookies & login session:
-     - Windows: `start "" "https://tiervibe.com/t/import#data=<urlencoded-base64>"`
+     - **Windows / PowerShell** (the default shell on Windows): `Start-Process "https://tiervibe.com/t/import#data=<urlencoded-base64>"`
+     - **Windows / cmd.exe or Git Bash**: `start "" "https://tiervibe.com/t/import#data=<urlencoded-base64>"`
      - macOS: `open "https://tiervibe.com/t/import#data=<urlencoded-base64>"`
      - Linux: `xdg-open "https://tiervibe.com/t/import#data=<urlencoded-base64>"`
-   - **Do NOT** open it via playwright/puppeteer/a headless instance/the agent tool's embedded browser — those have no login session and break the "log in at the last step" flow. The OS `start`/`open`/`xdg-open` command is the only correct way (see rule 7).
+   - **Windows: pick the form that matches your shell.** In PowerShell `start` is an alias for `Start-Process`, so the cmd-style `start "" "<url>"` fails with `Cannot validate argument on parameter 'FilePath'` — the `""` placeholder is read as the program path. Conversely `Start-Process` doesn't exist in cmd.exe. If you don't know which shell you're in, `Start-Process` is the safer default on Windows.
+   - **Check the URL length before running the command** — the shell, not the browser, is the binding limit:
+
+     | How you open it | Ceiling | Notes |
+     |---|---|---|
+     | PowerShell `Start-Process` | ~32,000 chars | `CreateProcess` limit. Covers nearly every list. |
+     | cmd.exe / Git Bash `start` | **8,191 chars** | Git Bash's `start` shells out to `cmd.exe`. A 15-card list with detailed commentary runs ~14,000 chars — it fails here. |
+     | macOS `open` / Linux `xdg-open` | `ARG_MAX`, hundreds of KB | Not a practical constraint. |
+     | TierVibe's reader | 2,000,000 chars of `#data=` | Rejects with a "too large" error past this. |
+
+     Rough sizing: the URL comes to about **1.4× the JSON's UTF-8 byte count**. If it exceeds your shell's ceiling, use the file fallback in "Revisions" below rather than letting the command fail.
+   - **Do NOT** open it via playwright/puppeteer/a headless instance/the agent tool's embedded browser — those have no login session and break the "log in at the last step" flow. The OS open command is the only correct way (see rule 7).
    - Use the `#data=` **hash fragment** (not a query `?`): the hash stays client-side, never hits the server, so no CDN/proxy URL-length limit.
-   - The page auto-loads the board into the editor. **If the user isn't logged in, the site asks now — that's the only login step.** After login it returns and auto-loads.
+   - The page auto-loads the board into the editor. **If the user isn't logged in, the site asks now — that's the only login step.**
+   - ⚠️ **Tell the user to log in with email, not Google.** `/t/import` is auth-protected, and the login page carries the pending board in router state. Email login returns to it and the board loads; the **Google button currently redirects to the homepage instead, silently discarding the board** (site-side bug — the handler navigates to `/` rather than the saved location). Until that's fixed, say so before they click: *"if it asks you to log in, use email — Google sign-in will lose the board."* If they hit it anyway, nothing is lost on your side — just re-run the same open command after they're logged in.
 3. Tell the user: the board's open, drag the cards into final order, click **发布**.
 
 Do NOT save a `.tiervibe.json` to disk — the URL already carries the data; a saved file is redundant clutter.
@@ -157,7 +170,9 @@ Do NOT save a `.tiervibe.json` to disk — the URL already carries the data; a s
 
 When the user says "change X / move Y / rewrite this commentary", edit the JSON in memory and **re-run the same open command with the new base64**. A fresh browser tab opens, the new board auto-loads — the user uses the new tab, no need to close anything. Each edit = one re-open.
 
-Only if the JSON is enormous (>~1.5 MB base64, rare — many long commentaries) and the URL is too long: save `<slug>.tiervibe.json` once and tell the user to drag it onto `https://tiervibe.com/t/import` as a fallback. Otherwise never save a file.
+**File fallback — only when the URL won't fit the shell.** Compare the URL length against your shell's ceiling in the table above (most often this bites in cmd.exe / Git Bash at 8,191 chars). If it doesn't fit: save `<slug>.tiervibe.json` once, then tell the user to open `https://tiervibe.com/t/import` and drop the file on the drop zone — the page accepts a dropped/picked file on exactly the same path as `#data=`. Otherwise never save a file.
+
+On Windows, prefer switching to `Start-Process` (~32,000 chars) before falling back to a file — that alone clears almost every list.
 
 ## Reference files (load on demand)
 - `references/data-schema.md` — full `.tiervibe.json` format + validation rules. Read before emitting.
