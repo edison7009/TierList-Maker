@@ -27,22 +27,13 @@ You run the OS open command; the user's default browser lands on
 `/t/import` is auth-protected. If the user isn't logged in, they're bounced to
 `/login`, and the pending board rides along in the router's location state.
 
-- **Email login returns to the board.** The handler navigates back to the saved
-  location, hash intact, and the import runs.
-- **⚠️ Google login currently loses the board.** That handler navigates to `/`
-  instead of the saved location, so the payload is dropped and the user lands on
-  the homepage with nothing. This is a site-side bug, not something you can work
-  around from the skill.
+Either sign-in method — email or Google — returns to the board with the hash
+intact, and the import runs. Signing up works too: the pending location is
+forwarded through `/signup`.
 
-So when the user may not be logged in, say so *before* they click:
-
-> 如果网站提示登录,**请用邮箱登录** —— Google 一键登录目前会跳回首页,榜单数据会丢。
-
-> If it asks you to log in, **use email** — Google sign-in currently bounces to
-> the homepage and loses the board.
-
-If they hit it anyway, nothing is lost on your side: re-run the same open command
-once they're logged in and the board loads.
+So there's no need to steer the user toward a particular button. If anything does
+go wrong, nothing is lost on your side: re-run the same open command once they're
+logged in and the board loads.
 
 ## Path B — file drop (fallback only, when the URL won't fit)
 
@@ -68,13 +59,13 @@ page works as a classic drop zone:
 In the user's language. **Path A — what you'll use almost every time:**
 
 > 榜单已经在浏览器里打开了。
-> 1. 如果提示登录,**用邮箱登录**(Google 登录目前会丢数据)
+> 1. 如果提示登录,登录完会自动回到榜单
 > 2. 层级、卡片、讲解都已经填好了
 > 3. 拖动卡片排好最终顺序
 > 4. 点「发布」
 
 > Your board is open in the browser.
-> 1. If it asks you to log in, **use email** (Google sign-in currently loses the board)
+> 1. If it asks you to log in, it'll come back to the board afterwards
 > 2. Tiers, cards, and commentary are already filled in
 > 3. Drag the cards into your final order
 > 4. Click 发布 (Publish)

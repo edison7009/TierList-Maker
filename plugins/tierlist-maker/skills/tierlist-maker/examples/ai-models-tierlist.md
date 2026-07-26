@@ -144,7 +144,7 @@ Start-Process "https://tiervibe.com/t/import#data=<urlencoded-base64>"
 Then, in Chinese to match the list:
 
 > 榜单已经在浏览器里打开了。
-> 1. 如果提示登录,**用邮箱登录**(Google 登录目前会跳回首页,数据会丢)
+> 1. 如果提示登录,登录完会自动回到这个榜单
 > 2. 5 个层级 + 8 张卡片 + 讲解都已经填好了
 > 3. 拖动卡片排好最终顺序
 > 4. 点「发布」

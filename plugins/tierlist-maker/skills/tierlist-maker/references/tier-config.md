@@ -48,8 +48,10 @@ A bold "从夯到拉" (best → worst) list. **henz is Chinese-only** for tier n
 
 Traditional Chinese (zh-Hant) names: 夯 / 頂級 / 人上人 / NPC / 拉完了.
 
-The henz preset carries no board brightness of its own — derive `bgBrightness`
-from the card colors in Step 4 like any other list.
+The site's own henz *route* entry (`/t/chdl`) seeds a light board (brightness 50),
+but that seed never reaches an imported board — the value in your `.tiervibe.json`
+takes precedence. So derive `bgBrightness` from the card colors in Step 4 like any
+other list; don't copy the 50.
 
 ## love preset (Love → Dislike) — 5 tiers, English
 
