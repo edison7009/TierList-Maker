@@ -75,7 +75,7 @@ In the user's language. **Path A — what you'll use almost every time:**
 > 榜单太大,URL 放不下,所以存成了文件:`<absolute path>`
 > 1. 打开 https://tiervibe.com/t/import
 > 2. 点击中间区域选择这个文件(或直接拖进去)
-> 3. 如果提示登录,用邮箱登录
+> 3. 如果提示登录,登录完回到这个页面再选一次文件
 > 4. 拖动卡片排好顺序,点「发布」
 
 Do not add steps about uploading images or calling APIs — opening the board is
