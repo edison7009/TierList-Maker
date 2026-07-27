@@ -1,8 +1,6 @@
 # TierList Maker
 
-A portable Agent Skills plugin that helps a user author a **TierVibe** tier list and produce a `.tiervibe.json` they import at `https://tiervibe.com/t/import`.
-
-The agent does all the work (interview, tiers, cards, explanations) and auto-opens the result in your browser. Nothing touches the TierVibe server until you click **Publish** in the editor — login only comes up at that final step.
+One click to a high-quality TierList - colors, text, and images are all customizable.
 
 > 中文版见 [README.zh-CN.md](README.zh-CN.md).
 

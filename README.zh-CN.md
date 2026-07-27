@@ -1,8 +1,6 @@
 # TierList Maker
 
-一个可移植的 Agent Skills 插件,帮你用 AI **制作高质量的 TierVibe 榜单**,并产出一份 `.tiervibe.json`,在 `https://tiervibe.com/t/import` 一键导入。
-
-agent 负责全部劳动(采访、层级、卡片、讲解),最后**自动打开浏览器**把榜单加载出来。在你点「发布」之前,所有数据都在本地,不碰 TierVibe 服务器;登录只在最后那一步出现。
+一键快捷制作高质量 TierList,颜色/文字/图片全可自定义。
 
 > 英文版见 [README.md](README.md)。
 
