@@ -1,7 +1,7 @@
 ---
 name: tierlist-maker
 description: Builds a TierVibe tier list through a step-by-step interview, then AUTO-OPENS it in the user's browser (no file drag). Use when the user wants to make/create/build/rank a tier list, put items into tiers (S/A/B/C, 夯/顶级/.../拉完了, Love/Like/Okay/Meh/Dislike), or make a "从夯到拉" list. Asks ONE question at a time — FIRST whether the user wants an image tier list or a text one. For image mode, priority is the user supplying images (public links or local files); AI image search/generation is the AI's own capability, not this skill's. Sets up tiers, drafts text or image cards, writes markdown commentary per card, then opens https://tiervibe.com/t/import#data=... so the board loads automatically. No server calls, no login until the final step.
-version: 1.0.3
+version: 1.0.4
 when_to_use: ["make a tier list", "create a tier list", "build a tier list", "rank these items", "tier list maker", "S A B C ranking", "从夯到拉", "夯到拉", "tier list for ...", "rank ... into tiers"]
 metadata:
   openclaw:
@@ -10,17 +10,17 @@ metadata:
 
 # TierList Maker (TierVibe)
 
-You build a TierVibe tier list WITH the user through a step-by-step interview, then **auto-open the result in their browser**. The user logs in only at the end, drags the cards to sort, publishes.
+You build a TierVibe tier list WITH the user through a step-by-step interview, then **hand them a `launcher.html` that opens the result in their browser**. The user logs in only at the end, drags the cards to sort, publishes.
 
 ## Non-negotiable rules (read first)
 1. **Ask ONE question at a time.** Wait for the answer. Never dump a full list in one shot.
 2. **Ask image-vs-text mode FIRST (Step 0).** Two card modes — image cards (a picture on each card) or text cards (a label on each card). Ask which the user wants before anything else; never assume text. For image cards use only a REAL `https://` URL the user supplied or you personally verified — never guess or fabricate a URL (broken images are the #1 failure). Local image files (`D:\…`, `file:`, `data:`, `blob:`) CANNOT be embedded in the `.tiervibe.json` — the reader rejects them — so the local-images flow uses text-card placeholders + a manifest mapping each file to its item/tier/detail (Step 3½); the user swaps the placeholder for their local file in the editor after import.
 3. **Commentary must use real markdown** (`##`, `**`, `-`, `>`), not flat prose. Rules below.
 4. **Login is the last step only.** Never mention accounts/sign-in before the final "open browser" step.
-5. **Final step = open the browser with the data in the URL.** Not "save a file and drag it."
+5. **Final step = write a `launcher.html` that redirects to the import URL with the data in `#data=`, and have the user open it.** Not "save a file and drag it."
 6. **Never railroad into a fixed 1/2 choice.** When you offer options (presets, styles, colors, anything), ALWAYS end with an open escape — "or tell me your own / 或者你说说你想要的别的". The user can describe freely in their own words; adapt to whatever they say. Do not force a pick from a numbered list.
-7. **Open the USER'S DEFAULT system browser — never an agent's built-in/headless browser.** This URL is for a human to click around in: it needs the user's real browser (Google Chrome / Edge / Safari / Firefox — whatever they set as the OS default), so it carries their cookies, logins, bookmarks, and muscle memory. Do NOT open it via playwright/puppeteer/a headless instance/the agent tool's embedded browser — those have no login session and break the "log in at the last step" flow. Use the OS open command only (next section).
-8. **NEVER transcribe the base64 or the final URL by hand.** Build it with a tool (one shell/python line) and feed that same string straight into the open command or a file. Do NOT retype it into a chat message, do NOT copy it character-by-character between tool calls, do NOT "give it to the user to paste". A real board runs 10-20k characters; one wrong character and the payload fails to decode — the user sees "import failed" with nothing to salvage and the whole interview is wasted. **If you can't open a browser, write the URL to a file** (see the environment check in "Emit + auto-open") — never into prose.
+7. **Open the USER'S DEFAULT system browser — never an agent's built-in/headless browser.** This URL is for a human to click around in: it needs the user's real browser (Google Chrome / Edge / Safari / Firefox — whatever they set as the OS default), so it carries their cookies, logins, bookmarks, and muscle memory. Do NOT open it via playwright/puppeteer/a headless instance/the agent tool's embedded browser — those have no login session and break the "log in at the last step" flow. Hand it over as a `launcher.html` the user opens in that browser (next section) - never run an OS open command yourself.
+8. **NEVER transcribe the base64 or the final URL by hand.** Build it with a tool (one shell/python line) and feed that same string straight into the `launcher.html` you write. Do NOT retype it into a chat message, do NOT copy it character-by-character between tool calls, do NOT "give it to the user to paste". A real board runs 10-20k characters; one wrong character and the payload fails to decode — the user sees "import failed" with nothing to salvage and the whole interview is wasted. **Always put the URL into `launcher.html`** (see the section Emit + hand off via launcher.html) - never into prose.
 9. **Only ask what the user hasn't already told you.** Rule 1 means one question at a time, not six questions regardless. If their opening message already carries the topic, the items, and roughly how many tiers, don't march back through Steps 0-3 collecting it again — state what you inferred in one line, ask only what's genuinely missing, and get them something to look at. A user who knows what they want should not sit through six rounds before seeing a board.
 
 ## The interview (one question at a time)
@@ -143,56 +143,86 @@ Lead each `detail` with a one-line verdict, then 1-3 short supporting sentences.
 
 **Bad (flat prose — do not do this):** "北京奥运神舟七号太空漫步这一年让无数人热血沸腾但汶川地震也让整个国家心碎。"
 
-## Emit + auto-open (final step)
+## Emit + hand off via launcher.html (final step)
 
-1. Build the `.tiervibe.json` in memory (schema: `references/data-schema.md`). Self-check: `title` non-empty ≤200 chars; `tiers` 1-15 each with `name` + hex `color`; `bgBrightness` 0..100; text cards have non-empty `text`; **total cards across all tiers + `candidates` ≤ 200**; **no raw HTML in any `detail`**. Do the count with a tool, not by eye — one line that prints card count, JSON byte size, and final URL length is worth more than re-reading the JSON.
+ONE hand-off path, everywhere: write a tiny `launcher.html` that redirects to the
+import page with the data in the URL hash, then have the user open that file. No
+OS "open browser" command, no headless browser, no "save a file and drag it" as
+the normal flow. Why: the OS open command silently fails in many agent tools
+(local agents whose shell can't reach a visible browser, web/IDE agents,
+sandboxes); trying it first just shows the user nothing until you fall back. One
+path that always works, no surprises, no stunts.
 
-**First: where are you actually running?** The rest of this section assumes you can launch the user's own browser. That is true in a local agent (Claude Code / Codex on their machine) and false in a cloud sandbox, container, or any remote session — there, `xdg-open` opens a browser *inside the sandbox* that the user will never see, and `Start-Process` doesn't exist at all. Pick the branch that matches, and **never** resolve a failure to open by pasting the URL into chat (rule 8):
+1. Build the `.tiervibe.json` in memory (schema: `references/data-schema.md`).
+   Self-check: `title` non-empty and <= 200 chars; `tiers` 1-15 each with `name`
+   + hex `color`; `bgBrightness` 0..100; text cards have non-empty `text`;
+   **total cards across all tiers + `candidates` <= 200**; **no raw HTML in any
+   `detail`**. Do the count with a tool, not by eye - one line that prints card
+   count, JSON byte size, and final URL length beats re-reading the JSON.
 
-| Your situation | What to do |
-|---|---|
-| **A. Running on the user's own machine, with a shell** | The open command below. This is the default and the best experience. |
-| **B. Remote/sandboxed, but you can deliver files to the user** | Write TWO files and send both: `<slug>.tiervibe.json`, and a `launcher.html` containing nothing but a redirect to the import URL (`<meta http-equiv="refresh" content="0;url=https://tiervibe.com/t/import#data=...">` plus a plain `<a>` fallback). Tell them: double-click `launcher.html`, or drop the `.json` on `https://tiervibe.com/t/import`. The URL rides inside a file — it is never retyped. |
-| **C. Remote, text-only channel** | Send the `.tiervibe.json` content and have them save it and drop it on `https://tiervibe.com/t/import`. The JSON survives a copy-paste in a way a 15,000-character URL does not. |
+2. Build the import URL; the data rides in the hash exactly as the page expects:
+   `https://tiervibe.com/t/import#data=<urlencoded-base64-of-the-json>` (base64
+   the UTF-8 JSON, then URL-encode it). Build it with a tool (rule 8) - never
+   transcribe it by hand.
 
-If you're unsure which one you're in, test it rather than assume: a local agent can open a browser; if the command silently succeeds but the user says nothing appeared, you're in B.
+3. Write `launcher.html` (in the work dir or cwd). It is nothing but an instant
+   redirect to that URL plus a visible clickable fallback, so it works whether
+   or not the meta-refresh fires. Use this exact template, replacing both
+   `IMPORT_URL` with the URL from step 2:
 
-2. **Open the browser directly with the data in the URL** (no file saved, no drag) — **branch A only**:
-   - UTF-8 base64-encode the JSON, then URL-encode that base64 string.
-   - run ONE OS open command — this launches the user's **default system browser** (Chrome / Edge / Safari / Firefox), with their real cookies & login session:
-     - **Windows / PowerShell** (the default shell on Windows): `Start-Process "https://tiervibe.com/t/import#data=<urlencoded-base64>"`
-     - **Windows / cmd.exe or Git Bash**: `start "" "https://tiervibe.com/t/import#data=<urlencoded-base64>"`
-     - macOS: `open "https://tiervibe.com/t/import#data=<urlencoded-base64>"`
-     - Linux: `xdg-open "https://tiervibe.com/t/import#data=<urlencoded-base64>"`
-   - **Windows: pick the form that matches your shell.** In PowerShell `start` is an alias for `Start-Process`, so the cmd-style `start "" "<url>"` fails with `Cannot validate argument on parameter 'FilePath'` — the `""` placeholder is read as the program path. Conversely `Start-Process` doesn't exist in cmd.exe. If you don't know which shell you're in, `Start-Process` is the safer default on Windows.
-   - **Check the URL length before running the command** — the shell, not the browser, is the binding limit:
+   <!doctype html><meta charset="utf-8">
+   <meta http-equiv="refresh" content="0; url=IMPORT_URL">
+   <title>Opening TierVibe...</title>
+   <p>正在打开榜单... 如果没自动跳转，<a href="IMPORT_URL">点这里</a>。</p>
+   <p>Opening your board... if it doesn't jump automatically, <a href="IMPORT_URL">click here</a>.</p>
 
-     | How you open it | Ceiling | Notes |
-     |---|---|---|
-     | PowerShell `Start-Process` | ~32,000 chars | `CreateProcess` limit. Covers nearly every list. |
-     | cmd.exe / Git Bash `start` | **8,191 chars** | Git Bash's `start` shells out to `cmd.exe`. A 15-card list with detailed commentary runs ~14,000 chars — it fails here. |
-     | macOS `open` / Linux `xdg-open` | `ARG_MAX`, hundreds of KB | Not a practical constraint. |
-     | TierVibe's reader | 2,000,000 chars of `#data=` | Rejects with a "too large" error past this. |
+   The page is a local `file:`, so the redirect carries `#data=` straight into
+   the import page - the board auto-loads. No drag, no paste.
 
-     Rough sizing: the URL comes to about **1.4× the JSON's UTF-8 byte count**. If it exceeds your shell's ceiling, use the file fallback in "Revisions" below rather than letting the command fail.
-   - **Do NOT** open it via playwright/puppeteer/a headless instance/the agent tool's embedded browser — those have no login session and break the "log in at the last step" flow. The OS open command is the only correct way (see rule 7).
-   - Use the `#data=` **hash fragment** (not a query `?`): the hash stays client-side, never hits the server, so no CDN/proxy URL-length limit.
-   - The page auto-loads the board into the editor. **If the user isn't logged in, the site asks now — that's the only login step.** `/t/import` is auth-protected, so a logged-out visitor is bounced to `/login` with the pending board held in router state; email and Google both return to it afterwards (signing up works too), hash intact, and the import runs. No need to steer them toward a particular button. If something does go wrong, nothing is lost on your side — just re-run the same open command once they're logged in.
-3. Tell the user: the board's open, drag the cards into final order, click **发布**. Then **tell them what's faster to change themselves** — colors, font sizes, tier names, card order and background are all live controls in the editor, and editing them there beats a round-trip through you (which means regenerating the whole JSON and URL for one color). Say it plainly, in their language:
+4. Give the user the **absolute path** of `launcher.html` (and, if your chat
+   renders links, the path as a clickable link). Tell them, in their language, to
+   open it (double-click the file or click the link): it jumps to the import page
+   with the board already filled in. **Never paste the long URL itself into chat**
+   (rule 8) - the URL lives inside the file. Do NOT run any OS open command.
 
-   > 颜色、字号、层级名、卡片顺序这些在编辑器里直接改更快;内容、分层、增删项目再回来找我。
+5. Then tell them the rest, in their language:
 
-   > Colors, font sizes, tier names and card order are quicker to tweak right in the editor. Come back to me for content, tier structure, or adding/removing items.
+   > 榜单已经在浏览器里打开了。
+   > 1. 如果提示登录，登录完会自动回到榜单
+   > 2. 层级、卡片、讲解都已经填好了
+   > 3. 拖动卡片排好最终顺序
+   > 4. 点「发布」
 
-Do NOT save a `.tiervibe.json` to disk — the URL already carries the data; a saved file is redundant clutter.
+   > Your board is open in the browser.
+   > 1. If it asks you to log in, it'll come back to the board afterwards
+   > 2. Tiers, cards, and commentary are already filled in
+   > 3. Drag the cards into your final order
+   > 4. Click 发布 (Publish)
 
-## Revisions (user asks for changes after seeing it)
+   And tell them what's faster to change themselves - colors, font sizes, tier
+   names, card order and background are all live editor controls; editing them
+   there beats a round-trip through you.
 
-When the user says "change X / move Y / rewrite this commentary", edit the JSON in memory and **re-run the same open command with the new base64**. A fresh browser tab opens, the new board auto-loads — the user uses the new tab, no need to close anything. Each edit = one re-open.
+6. **Do NOT save a `.tiervibe.json` to disk** in the normal case - `launcher.html`
+   already carries the data via `#data=`; a saved file is redundant clutter.
 
-**File fallback — only when the URL won't fit the shell.** Compare the URL length against your shell's ceiling in the table above (most often this bites in cmd.exe / Git Bash at 8,191 chars). If it doesn't fit: save `<slug>.tiervibe.json` once, then tell the user to open `https://tiervibe.com/t/import` and drop the file on the drop zone — the page accepts a dropped/picked file on exactly the same path as `#data=`. Otherwise never save a file.
+7. **Revisions.** When the user says "change X / move Y / rewrite this commentary",
+   edit the JSON in memory, rebuild the URL, **overwrite `launcher.html`**, and
+   tell them to open it again - a fresh tab auto-loads the new board. Each edit =
+   one re-open.
 
-On Windows, prefer switching to `Start-Process` (~32,000 chars) before falling back to a file — that alone clears almost every list.
+8. **Oversized board (rare escape hatch).** The only limit now is the import
+   page's `#data=` ceiling (2,000,000 chars) - there is no shell command-line
+   limit anymore, because the URL lives in a file, not a command. If the URL ever
+   exceeds 2,000,000 chars the page rejects `#data=`; only then write
+   `<slug>.tiervibe.json` once and tell the user to open
+   `https://tiervibe.com/t/import` and drop the file on the drop zone (same code
+   path as `#data=`). Otherwise never save a file.
+
+Do NOT open the board via playwright/puppeteer/a headless instance/the agent
+tool's embedded browser - those have no login session and break the "log in at
+the last step" flow. The user's own browser, opened via `launcher.html`, is the
+only correct way.
 
 ## Reference files (load on demand)
 - `references/data-schema.md` — full `.tiervibe.json` format + validation rules. Read before emitting.

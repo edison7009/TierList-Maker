@@ -3,14 +3,12 @@
 What actually happens at `https://tiervibe.com/t/import`, so your final message
 matches reality.
 
-**The primary path is auto-open, not a file drop.** `SKILL.md` → "Emit + auto-open"
-is the source of truth: you base64 the JSON into `#data=` and run one OS open
-command. Do NOT tell the user a file was generated or ask them to drag anything —
-the file drop below exists only as the oversized-URL fallback.
+**The single path is a `launcher.html` redirect - never an OS open command, never a file drop.** `SKILL.md` → "Emit + hand off via launcher.html"
+is the source of truth: you base64 the JSON into `#data=`, write a `launcher.html` that redirects to it, and the user opens that file. Do NOT ask the user to drag the JSON or paste the URL into chat - the launcher.html already carries the data; the file drop below exists only for the rare oversized board.
 
-## Path A — auto-open via `#data=` (default)
+## Path A — launcher.html redirect via `#data=` (the only normal path)
 
-You run the OS open command; the user's default browser lands on
+The user opens `launcher.html`; the user's default browser lands on
 `/t/import#data=<urlencoded-base64>`. Then:
 
 - The page reads the hash on mount, base64-decodes it as UTF-8, validates it, and
@@ -32,12 +30,12 @@ intact, and the import runs. Signing up works too: the pending location is
 forwarded through `/signup`.
 
 So there's no need to steer the user toward a particular button. If anything does
-go wrong, nothing is lost on your side: re-run the same open command once they're
+go wrong, nothing is lost on your side: have them open `launcher.html` again once they're
 logged in and the board loads.
 
-## Path B — file drop (fallback only, when the URL won't fit)
+## Path B — file drop (rare fallback - only when #data= exceeds 2,000,000 chars)
 
-Use this only when the URL exceeds your shell's ceiling (see `SKILL.md`). Then the
+Use this only when the #data= URL exceeds the 2,000,000-char ceiling of the import page - there is no shell limit anymore, because the URL lives in `launcher.html`, not a command. Then the
 page works as a classic drop zone:
 
 - A centered drop zone: "点击选择或拖入文件" (click to choose or drop a file),
