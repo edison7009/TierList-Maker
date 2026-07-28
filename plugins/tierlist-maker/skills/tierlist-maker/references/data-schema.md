@@ -90,7 +90,7 @@ Every card is one of two types:
 ```jsonc
 {
   "type": "image",            // REQUIRED, must be "image"
-  "imageUrl": "https://...",  // REQUIRED. http(s) URL. A placeholder/suggestion.
+    "imageUrl": "https://... or data:image/...",  // REQUIRED. http(s) URL OR data:image/ base64. See below.
   "label": "Claude",          // OPTIONAL, human-readable only; NOT stored on the card.
   "detail": "markdown..."     // OPTIONAL. Explanation.
 }
@@ -99,8 +99,7 @@ Every card is one of two types:
   rather than re-hosting them. The user can replace the image in the editor
   (their own local file → uploaded to the platform CDN) for a guaranteed-clean
   cover image. See text-cards.md for the cover-canvas caveat.
-- Do NOT use `data:` or `blob:` URLs — use a real https URL, or switch to a
-  text card.
+- `data:image/...;base64,` URLs ARE allowed (reader accepts them; the editor's own "add local image" produces them, and publish uploads them to CDN). `blob:` and non-image `data:` URLs are rejected - use an https URL or a `data:image/` URL, or switch to a text card.
 
 ## Validation rules (the reader enforces these)
 
@@ -116,7 +115,7 @@ Every card is one of two types:
 | `tiers[].cards` | if present, array of cards |
 | `candidates` | if present, array of cards |
 | text card `text` | non-empty |
-| image card `imageUrl` | non-empty, starts with `http://` or `https://` |
+| image card `imageUrl` | non-empty, starts with `http://`/`https://` or `data:image/...;base64,` |
 | `detail` | trimmed; empty string is dropped (treated as "no explanation") |
 | **total cards** | **sum of every `tiers[].cards` plus `candidates` must be ≤ 200** — the reader rejects with `too many cards (N); max 200` |
 
@@ -140,7 +139,7 @@ As a rule of thumb the URL runs about **1.4×** the JSON's UTF-8 byte count.
 
 - Per-tier background colors. Only the single global `bgBrightness`.
 - More than 15 tiers.
-- `data:`/`blob:` image URLs.
+- `blob:` image URLs, and non-image `data:` URLs (`data:image/` IS supported).
 - Raw HTML in `detail` (it's escaped, not rendered).
 - Nested tiers, sub-tiers, or card ordering beyond array order.
 - Draft vs publish flag — the file always opens as a draft in the editor; the
