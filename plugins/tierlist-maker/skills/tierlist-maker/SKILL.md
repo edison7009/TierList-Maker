@@ -1,7 +1,7 @@
 ---
 name: tierlist-maker
 description: Builds a TierVibe tier list through a step-by-step interview, then AUTO-OPENS it in the user's browser (no file drag). Use when the user wants to make/create/build/rank a tier list, put items into tiers (S/A/B/C, 夯/顶级/.../拉完了, Love/Like/Okay/Meh/Dislike), or make a "从夯到拉" list. Asks ONE question at a time — FIRST whether the user wants an image tier list or a text one. For image mode, priority is the user supplying images (public links or local files); AI image search/generation is the AI's own capability, not this skill's. Mapping local image files to items is vision-free: suggest the user name each file after its item, so no image recognition (and its token cost) is needed. Sets up tiers, drafts text or image cards, writes markdown commentary per card, then opens https://tiervibe.com/t/import#data=... so the board loads automatically. No server calls, no login until the final step.
-version: 1.0.6
+version: 1.0.7
 when_to_use: ["make a tier list", "create a tier list", "build a tier list", "rank these items", "tier list maker", "S A B C ranking", "从夯到拉", "夯到拉", "tier list for ...", "rank ... into tiers"]
 metadata:
   openclaw:
@@ -76,7 +76,7 @@ Ask ONE question: **"图片你准备好了吗?是哪种情况?"** and branch:
 
   The manifest is a working doc — it does NOT go in the JSON. It exists so you can build the board without ever looking at the images, and so the user has a swap cheat-sheet after import.
 - Emit **text-card placeholders** in the JSON: each card `{ "type": "text", "text": "<item>", ... }` so the user can identify it in the editor by its label. (If the user also has a public URL for some items, use an image card for those and text placeholders for the rest.)
-- Hand the manifest to the user at the end. After import, they swap each placeholder card's image for the matching local file in the editor (the editor uploads it to the platform CDN — the only clean path for local images). The manifest is their swap cheat-sheet: "the card labeled 苹果 → use 苹果.png".
+- **Save the manifest as a file** (`对照表.md` / `manifest.md`) at the final step, not just printed to chat or console. The user swaps images inside the browser editor, where they cannot see your chat or console, so the manifest must be a file they can open alongside it. This manifest `.md` is a user cheat-sheet, NOT the `.tiervibe.json`, so it is exempt from the "do not save a file" rule in the final-step section. After import, they swap each placeholder card's image for the matching local file in the editor (the editor uploads it to the platform CDN — the only clean path for local images). The manifest is their swap cheat-sheet: "the card labeled 苹果 → use 苹果.png".
 
 **C. User doesn't have images yet / wants help finding them**
 - Be honest: whether you can search the web for images or generate them depends on YOUR OWN tools and capabilities, not on this skill. Don't promise a search step as a skill feature.
@@ -204,7 +204,7 @@ path that always works, no surprises, no stunts.
    there beats a round-trip through you.
 
 6. **Do NOT save a `.tiervibe.json` to disk** in the normal case - `launcher.html`
-   already carries the data via `#data=`; a saved file is redundant clutter.
+   already carries the data via `#data=`; a saved file is redundant clutter. This rule targets the `.tiervibe.json` board data ONLY. It does NOT apply to the image-mode manifest: in Step 3½ branch B (local image files) you MUST save the manifest as a file (`对照表.md` / `manifest.md`) next to `launcher.html` and point the user to it in the final message - they swap images in the browser editor, where they cannot see your chat or console, so that file is their only swap reference. Add a line to the step-5 message, e.g.: "图片对照表在旁边的 `对照表.md`,按表把每张卡的文字换成对应图片".
 
 7. **Revisions.** When the user says "change X / move Y / rewrite this commentary",
    edit the JSON in memory, rebuild the URL, **overwrite `launcher.html`**, and
