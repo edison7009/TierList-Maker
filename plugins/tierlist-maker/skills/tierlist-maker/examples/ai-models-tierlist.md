@@ -132,11 +132,11 @@ Then the agent builds the JSON and runs the open command.
 
 ## The final step
 
-The agent base64-encodes that JSON, URL-encodes it, and opens the user's default
+The agent base64-encodes that JSON (standard `A-Za-z0-9+/`, NOT base64url), percent-encodes it, and opens the user's default
 browser — **it does not save a file**:
 
 ```powershell
-Start-Process "https://tiervibe.com/t/import#data=<urlencoded-base64>"
+Start-Process "https://tiervibe.com/t/import#data=<base64>"
 ```
 
 (macOS `open`, Linux `xdg-open`, Windows cmd/Git Bash `start "" "<url>"`.)

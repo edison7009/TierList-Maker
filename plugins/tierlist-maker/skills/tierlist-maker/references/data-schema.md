@@ -125,10 +125,10 @@ On any violation the import page shows the error message and stays on the page
 
 ## Size limits when auto-opening via `#data=`
 
-The import page also accepts the board in the URL hash — `/t/import#data=<urlencoded-base64>`,
-which is how the skill hands off (see `SKILL.md`). Two caps apply there:
+The import page also accepts the board in the URL hash — `/t/import#data=<base64>` (standard base64 of the UTF-8 JSON, then `encodeURIComponent`; NOT base64url; see `SKILL.md`),
+which is how the skill hands off. Two caps apply there:
 
-- The reader rejects the payload past **2,000,000 characters** of URL-encoded base64.
+- The reader rejects the payload past **2,000,000 characters** of the percent-encoded base64.
 - Well before that, the **shell's command-line limit** binds. See the table in
   `SKILL.md` → "Emit + auto-open"; the tight one is cmd.exe / Git Bash at 8,191
   characters. Past your shell's ceiling, save the file and let the user drop it

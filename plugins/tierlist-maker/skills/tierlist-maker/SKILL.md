@@ -1,7 +1,7 @@
 ---
 name: tierlist-maker
-description: Builds a TierVibe tier list through a step-by-step interview, then AUTO-OPENS it in the user's browser (no file drag). Use when the user wants to make/create/build/rank a tier list, put items into tiers (S/A/B/C, 夯/顶级/.../拉完了, Love/Like/Okay/Meh/Dislike), or make a "从夯到拉" list. Asks ONE question at a time — FIRST whether the user wants an image tier list or a text one. For image mode, priority is the user supplying images (public links or local files); AI image search/generation is the AI's own capability, not this skill's. Sets up tiers, drafts text or image cards, writes markdown commentary per card, then opens https://tiervibe.com/t/import#data=... so the board loads automatically. No server calls, no login until the final step.
-version: 1.0.4
+description: Builds a TierVibe tier list through a step-by-step interview, then AUTO-OPENS it in the user's browser (no file drag). Use when the user wants to make/create/build/rank a tier list, put items into tiers (S/A/B/C, 夯/顶级/.../拉完了, Love/Like/Okay/Meh/Dislike), or make a "从夯到拉" list. Asks ONE question at a time — FIRST whether the user wants an image tier list or a text one. For image mode, priority is the user supplying images (public links or local files); AI image search/generation is the AI's own capability, not this skill's. Mapping local image files to items is vision-free: suggest the user name each file after its item, so no image recognition (and its token cost) is needed. Sets up tiers, drafts text or image cards, writes markdown commentary per card, then opens https://tiervibe.com/t/import#data=... so the board loads automatically. No server calls, no login until the final step.
+version: 1.0.6
 when_to_use: ["make a tier list", "create a tier list", "build a tier list", "rank these items", "tier list maker", "S A B C ranking", "从夯到拉", "夯到拉", "tier list for ...", "rank ... into tiers"]
 metadata:
   openclaw:
@@ -30,7 +30,7 @@ You build a TierVibe tier list WITH the user through a step-by-step interview, t
 Ask ONE question: **图片版还是文字版?(image tier list, or text?)** Wait for the answer.
 
 - **Text version** — each card shows a label. Fastest, most reliable, no image hunting. Best for abstract items (model names, dish names, years, concepts). → skip Step 3½, go straight to Step 1.
-- **Image version** — each card shows a picture. Looks better, but you need an image for every item. Best when the image IS the point (a specific character, logo, photo). → you'll gather images in Step 3½ after the items are known, then continue through Steps 1→2→4→5 like text mode.
+- **Image version** — each card shows a picture. Looks better, but you need an image for every item. Best when the image IS the point (a specific character, logo, photo). → you'll gather images in Step 3½ after the items are known, then continue through Steps 1→2→4→5 like text mode. **Tip to give the user here:** if they'll bring local image files, suggest they name each file after its item (e.g. apple.png, 苹果.jpg). Then in Step 3½ you map files to items from the names alone, with NO image recognition, so image mode works even without vision and costs no extra tokens.
 
 State the trade-off, don't push one over the other. End with an open escape (rule 6): "或者你跟我说说你想怎么排 / or tell me what you have in mind". Whatever the user says, adapt.
 
@@ -65,18 +65,18 @@ Ask ONE question: **"图片你准备好了吗?是哪种情况?"** and branch:
 - Put each URL straight onto the card: `{ "type": "image", "imageUrl": "<url>", "label": "<item>", "detail": "..." }`.
 - Warn: external image hosts may taint the publish-time cover canvas (CORS); treat these as placeholders the user can swap in the editor for a guaranteed-clean cover.
 
-**B. User has the image files saved locally** (e.g. `1.png`, `2.png` on disk)
-- Local file paths can't go in the JSON (schema rejects `file:`/`data:`/`blob:`). So you do NOT read, encode, or embed the files — you never need to visually inspect them.
-- Instead, build a **manifest table** — your working source of truth. Ask the user, one item at a time, which file maps to which item/tier. Leave the `detail` column BLANK for now — it gets filled when Step 5 (commentary depth) runs later. Example:
+**B. User has the image files saved locally** (e.g. `apple.png`, `苹果.jpg` on disk)
+- Local file paths can't go in the JSON (schema rejects `file:`/`data:`/`blob:`). So you do NOT read, encode, or embed the files — and you NEVER need to "look at" or recognize their contents. This skill is vision-free by design: the file-to-item mapping comes from the USER (filenames or their answers), not from you recognizing images. Do not call vision on the files — it burns tokens for nothing and is never required here.
+- Instead, build a **manifest table** — your working source of truth. **Recommend the user name each file after its item** (apple.png, 苹果.jpg, Claude.png) - pass this suggestion along as soon as they pick image mode (Step 0), so they can rename while the interview runs. When filenames match item names, fill the manifest straight from the names in one shot. Only if they DON'T match (files are 1.png, 2.png, IMG_3031.jpg...) do you ask the user, one item at a time, which file maps to which item/tier. Leave the `detail` column BLANK for now — it gets filled when Step 5 (commentary depth) runs later. Example:
 
   | 文件 file | 条目 item | 层级 tier | 讲解 detail |
   |---|---|---|---|
-  | 1.png | 苹果 | 夯 | _(filled in Step 5)_ |
-  | 2.png | 香蕉 | 顶级 | _(filled in Step 5)_ |
+  | 苹果.png | 苹果 | 夯 | _(filled in Step 5)_ |
+  | 香蕉.png | 香蕉 | 顶级 | _(filled in Step 5)_ |
 
   The manifest is a working doc — it does NOT go in the JSON. It exists so you can build the board without ever looking at the images, and so the user has a swap cheat-sheet after import.
 - Emit **text-card placeholders** in the JSON: each card `{ "type": "text", "text": "<item>", ... }` so the user can identify it in the editor by its label. (If the user also has a public URL for some items, use an image card for those and text placeholders for the rest.)
-- Hand the manifest to the user at the end. After import, they swap each placeholder card's image for the matching local file in the editor (the editor uploads it to the platform CDN — the only clean path for local images). The manifest is their swap cheat-sheet: "the card labeled 苹果 → use 1.png".
+- Hand the manifest to the user at the end. After import, they swap each placeholder card's image for the matching local file in the editor (the editor uploads it to the platform CDN — the only clean path for local images). The manifest is their swap cheat-sheet: "the card labeled 苹果 → use 苹果.png".
 
 **C. User doesn't have images yet / wants help finding them**
 - Be honest: whether you can search the web for images or generate them depends on YOUR OWN tools and capabilities, not on this skill. Don't promise a search step as a skill feature.
@@ -161,9 +161,9 @@ path that always works, no surprises, no stunts.
    count, JSON byte size, and final URL length beats re-reading the JSON.
 
 2. Build the import URL; the data rides in the hash exactly as the page expects:
-   `https://tiervibe.com/t/import#data=<urlencoded-base64-of-the-json>` (base64
-   the UTF-8 JSON, then URL-encode it). Build it with a tool (rule 8) - never
-   transcribe it by hand.
+   `https://tiervibe.com/t/import#data=<base64-of-the-json>` - **standard** base64
+   (`A-Za-z0-9+/` + `=` padding) of the UTF-8 JSON, then percent-encode via `encodeURIComponent`
+   NOT base64url (`-`/`_`) - `atob()` rejects it and import fails. Build with a tool (rule 8), never by hand.
 
 3. Write `launcher.html` (in the work dir or cwd). It is nothing but an instant
    redirect to that URL plus a visible clickable fallback, so it works whether

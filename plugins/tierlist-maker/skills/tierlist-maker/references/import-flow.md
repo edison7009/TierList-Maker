@@ -9,7 +9,7 @@ is the source of truth: you base64 the JSON into `#data=`, write a `launcher.htm
 ## Path A — launcher.html redirect via `#data=` (the only normal path)
 
 The user opens `launcher.html`; the user's default browser lands on
-`/t/import#data=<urlencoded-base64>`. Then:
+`/t/import#data=<base64>` (standard base64 of the UTF-8 JSON, then `encodeURIComponent` - NOT base64url; see SKILL.md step 2). Then:
 
 - The page reads the hash on mount, base64-decodes it as UTF-8, validates it, and
   navigates straight to `/t/new` with tiers, cards, commentary, and background
