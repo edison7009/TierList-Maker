@@ -22,9 +22,9 @@ One click to a high-quality TierList - colors, text, and images are all customiz
 
 Ask the agent something like *"make a tier list for AI coding models"* and it runs the whole workflow for you:
 
-1. Interviews the topic and tier count (henz / love / custom presets).
-2. Sets up the tiers — names, title-bar colors, the board's global brightness.
-3. Drafts every card (text cards with coordinated colors, or image placeholders).
+1. Interviews the topic, tier count, and card mode (text or image).
+2. Sets up the tiers — names, title-bar colors, the board's global brightness. For local images, capable agents embed them as `data:image/...` cards; you do **not** need to upload them to a public image host.
+3. Drafts every card (text cards with coordinated colors, public image URLs, or embedded local images when the agent can read the files).
 4. Writes a markdown **commentary** on each card — the part that makes a tier list worth reading.
 5. Emits a single `.tiervibe.json` and opens `https://tiervibe.com/t/import` with the board loaded.
 6. You drag the cards into your final order and hit Publish. Login only happens here, at the last step.
@@ -111,7 +111,7 @@ codex plugin marketplace add edison7009/TierList-Maker
 
 ## How it works (the bridge on the TierVibe side)
 
-The TierVibe editor has a local reader at `/t/import` (no server port, no backend, no data-model change). It parses the `.tiervibe.json` client-side, flattens it into the editor's existing load format, reuses `TierDataService.loadCompleteData` (card sizing, text-card protocol, markdown explanations), and hands off to the editor via the existing `location.state.seed` injection path. The agent can also `start`/`open` a `https://tiervibe.com/t/import#data=<base64>` link so the board auto-loads with no file drag. The user then drags to sort and publishes.
+The TierVibe editor has a local reader at `/t/import` (no server port, no backend, no data-model change). It parses the `.tiervibe.json` client-side, flattens it into the editor's existing load format, reuses `TierDataService.loadCompleteData` (card sizing, text-card protocol, markdown explanations), and hands off to the editor via the existing `location.state.seed` injection path. Local image files are embedded as `data:image/...;base64,` by agents that can read files; raw `file:` paths are rejected by browsers, but public image hosting is not required for local-image import. The user then drags to sort and publishes.
 
 ## Icons
 
@@ -120,4 +120,4 @@ Neither marketplace manifest schema has an icon field (verified against the offi
 ## Scope / non-goals
 - Only **creates new** lists via import. Does not edit/delete existing posts.
 - No per-tier background — only the single global `bgBrightness` (0..100).
-- No image uploading — image URLs in the file are placeholders; the user swaps them in the editor if they want.
+- Local image files can be embedded by capable agents as `data:image/...` cards, then uploaded to TierVibe's CDN when you publish. Raw `file:` paths still do not work in browser import, but you do not need to upload local files to a public image host just to make them appear.

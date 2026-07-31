@@ -48,8 +48,7 @@ page works as a classic drop zone:
 ## In the editor (both paths)
 
 - Tiers and cards appear pre-filled; commentary is attached to its cards.
-- The user's remaining job: **drag cards to sort them** into final positions (and
-  swap any placeholder images for their own if they want). For image mode + branch B (local files), the user does this swap using the manifest file (`对照表.md` / `manifest.md`) you saved next to `launcher.html` - they can't see your chat or console from the browser, so that file is their only reference.
+- The user's remaining job: **drag cards to sort them** into final positions. For embedded local images (`data:image/`), the images already appear and publish uploads them to the platform CDN. Only for image mode + branch B2 (the agent cannot read local files), the user swaps placeholder text cards using the manifest file (`对照表.md` / `manifest.md`) you saved next to `launcher.html` - they can't see your chat or console from the browser, so that file is their only reference.
 - Then click **发布** (Publish) to post, or save as a draft.
 
 ## How to phrase the final step (templates)

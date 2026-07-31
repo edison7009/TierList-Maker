@@ -95,11 +95,9 @@ Every card is one of two types:
   "detail": "markdown..."     // OPTIONAL. Explanation.
 }
 ```
-- `imageUrl` is stored as-is. At publish time the editor keeps external URLs
-  rather than re-hosting them. The user can replace the image in the editor
-  (their own local file → uploaded to the platform CDN) for a guaranteed-clean
-  cover image. See text-cards.md for the cover-canvas caveat.
-- `data:image/...;base64,` URLs ARE allowed (reader accepts them; the editor's own "add local image" produces them, and publish uploads them to CDN). `blob:` and non-image `data:` URLs are rejected - use an https URL or a `data:image/` URL, or switch to a text card.
+- `imageUrl` is stored as-is. External http(s) images remain external. Embedded
+  `data:image/...;base64,` images behave like files added with the editor's own local-image button: they display immediately after import, and publish uploads them to the platform CDN.
+- `data:image/...;base64,` URLs ARE allowed (reader accepts them; the editor's own "add local image" produces them, and publish uploads them to CDN). Raw `file:` paths are still invalid, but do not tell users to upload local files to a public image host when you can read and embed the files as `data:image/`. `blob:` and non-image `data:` URLs are rejected - use an https URL or a `data:image/` URL, or switch to a text card.
 
 ## Validation rules (the reader enforces these)
 

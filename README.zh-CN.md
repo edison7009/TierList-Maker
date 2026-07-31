@@ -22,9 +22,9 @@
 
 跟 agent 说「给 AI 编程模型做个 tier list」,它会:
 
-1. 问清题材和层数(henz / love / 自定义预设,默认 `T1..Tn`)。
-2. 设好每个层级——标题、标题条颜色、全局背景明暗。
-3. 建好每张卡片(文字卡可配色,或图片占位)。
+1. 问清题材、层数和卡片模式(文字卡还是图片卡)。
+2. 设好每个层级——标题、标题条颜色、全局背景明暗。本地图片由有文件读取能力的 agent 嵌成 `data:image/...` 图片卡,不需要先传公共图床。
+3. 建好每张卡片(文字卡可配色、公共图片链接,或在 agent 能读取文件时直接嵌入本地图片)。
 4. 给每张卡写 markdown **讲解**——让榜单值得一读。
 5. 产出一个 `.tiervibe.json`,自动打开 `https://tiervibe.com/t/import`。
 6. 你把卡片拖到最终位置,点「发布」。登录只在最后这步。
@@ -111,7 +111,7 @@ codex plugin marketplace add edison7009/TierList-Maker
 
 ## 工作原理(TierVibe 侧的衔接)
 
-TierVibe 编辑器在 `/t/import` 有一个本地读取器(不开新端口、不动后端、不改数据契约)。它在浏览器里解析 `.tiervibe.json`,翻成编辑器内部加载格式,复用 `TierDataService.loadCompleteData`(卡片尺寸、文字卡协议、markdown 讲解),通过现有的 `location.state.seed` 注入路径交给编辑器。agent 还可以直接 `start`/`open` 一个 `https://tiervibe.com/t/import#data=<base64>` 链接,榜单自动加载,无需拖文件。
+TierVibe 编辑器在 `/t/import` 有一个本地读取器(不开新端口、不动后端、不改数据契约)。它在浏览器里解析 `.tiervibe.json`,翻成编辑器内部加载格式,复用 `TierDataService.loadCompleteData`(卡片尺寸、文字卡协议、markdown 讲解),通过现有的 `location.state.seed` 注入路径交给编辑器。有文件读取能力的 agent 会把本地图片嵌成 `data:image/...;base64,`;原始 `file:` 路径会被浏览器拒绝,但本地图导入不需要先传公共图床。之后你拖拽排序、发布。
 
 ## 图标
 
@@ -120,4 +120,4 @@ TierVibe 编辑器在 `/t/import` 有一个本地读取器(不开新端口、不
 ## 范围 / 不做
 - 只**创建新榜单**(导入)。不编辑/删除已有帖子。
 - 没有 per-tier 背景色——只有单个全局 `bgBrightness`(0..100)。
-- 不上传图片——文件里的图片 URL 是占位,需要的话用户在编辑器里换。
+- 本地图片文件可由有文件读取能力的 agent 嵌成 `data:image/...` 图片卡,发布时再上传到 TierVibe CDN。原始 `file:` 路径仍不能被浏览器导入,但不需要为了显示本地图而先传公共图床。
