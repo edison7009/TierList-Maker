@@ -120,4 +120,4 @@ Neither marketplace manifest schema has an icon field (verified against the offi
 ## Scope / non-goals
 - Only **creates new** lists via import. Does not edit/delete existing posts.
 - No per-tier background — only the single global `bgBrightness` (0..100).
-- Local image files can be embedded by capable agents as `data:image/...` cards, then uploaded to TierVibe's CDN when you publish. Raw `file:` paths still do not work in browser import, but you do not need to upload local files to a public image host just to make them appear.
+- Local image files can be embedded by capable agents as `data:image/...` cards, then uploaded to TierVibe's CDN when you publish. For transparent or semi-transparent local images, capable agents must preserve alpha (WebP/PNG), not flatten to RGB/JPEG; raw `file:` paths still do not work in browser import, but you do not need to upload local files to a public image host just to make them appear.

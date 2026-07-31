@@ -51,6 +51,9 @@ If a card needs a description, that's `detail` (the explanation), never `text`.
 - External `https://` image URLs are **placeholder/suggestions**. Do NOT download or upload.
   If the user has local files and you can read them, prefer embedding `data:image/`
   in the JSON instead of telling the user to upload the files to a public image host.
+  If a local image is transparent or semi-transparent, preserve alpha: use WebP/PNG
+  `data:image/` and never flatten it with `convert("RGB")` or JPEG, because JPEG
+  cannot store alpha and creates black/white halos around transparent pixels.
   If you cannot read the files or find a clean URL, switch the card to a text card.
 
 ### The cover-canvas caveat (why images are "user's local behavior")

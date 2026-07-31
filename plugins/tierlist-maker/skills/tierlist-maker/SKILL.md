@@ -1,7 +1,7 @@
 ---
 name: tierlist-maker
 description: Builds a TierVibe tier list through a step-by-step interview, then AUTO-OPENS it in the user's browser (no file drag). Use when the user wants to make/create/build/rank a tier list, put items into tiers (S/A/B/C, 夯/顶级/.../拉完了, Love/Like/Okay/Meh/Dislike), or make a "从夯到拉" list. Asks ONE question at a time — FIRST whether the user wants an image tier list or a text one. For image mode, priority is the user supplying images (public links or local files); AI image search/generation is the AI's own capability, not this skill's. Mapping local image files to items is vision-free: suggest the user name each file after its item, so no image recognition (and its token cost) is needed. Sets up tiers, drafts text or image cards, writes markdown commentary per card, then opens https://tiervibe.com/t/import#data=... so the board loads automatically. No server calls, no login until the final step.
-version: 1.0.9
+version: 1.0.10
 when_to_use: ["make a tier list", "create a tier list", "build a tier list", "rank these items", "tier list maker", "S A B C ranking", "从夯到拉", "夯到拉", "tier list for ...", "rank ... into tiers"]
 metadata:
   openclaw:
@@ -68,6 +68,26 @@ Ask ONE question: **"图片你准备好了吗?是哪种情况?"** and branch:
 **B. User has the image files saved locally** (e.g. `apple.png`, `苹果.jpg` on disk)
 - **Do NOT propose public image hosting as the normal fix for local files.** Raw `file:` paths cannot cross the browser import boundary, but TierVibe now accepts embedded `data:image/...;base64,` cards when you can read the files. Upload-to-img-host is only a last-resort user choice, not the skill's recommended path.
 - **B1. You CAN read local files** (you have file-read tools - Claude Code does; claude.ai chat does not): **embed the images directly.** Read each file, base64-encode it, put `data:image/<mime>;base64,...` in the card's `imageUrl`. The reader accepts `data:image/` (the SAME shape the editor's "add local image" button produces), and at publish the editor uploads each `data:` card to CDN - so an imported `data:` card is identical to a user-click-added card. No text placeholders, no manifest, no manual swap. This is the preferred path. Mind the size: `data:` is ~1.3x the file bytes, and the `#data=` URL caps at 2,000,000 chars (~2MB); past that, save a `.tiervibe.json` and use the file-drop (see "Oversized board"). Only `data:image/` - never other data: types.
+  - **Transparent/semi-transparent images: preserve alpha.** If a local image has transparency (`RGBA`, `LA`, palette `transparency`, or any alpha < 255), never flatten it with `convert("RGB")` and never save it as JPEG/JPG — JPEG cannot store alpha and will turn transparent pixels into black/white/halo artifacts. Prefer WebP with alpha for compression (`data:image/webp;base64,...`); use PNG if WebP is unavailable or if lossless edges matter. Only fully opaque images may be converted to JPEG.
+  - Safe compression pattern when you need to shrink local images before embedding: open with Pillow, detect transparency first, resize while keeping `RGBA`; for transparent images save as WebP/PNG without RGB conversion; for opaque photos/logos JPEG is acceptable. Example:
+    ```python
+    from PIL import Image
+    import base64, io
+
+    img = Image.open(path)
+    has_alpha = (
+        img.mode in ("RGBA", "LA") and img.getchannel("A").getextrema()[0] < 255
+    ) or (img.mode == "P" and "transparency" in img.info)
+    img.thumbnail((512, 512), Image.LANCZOS)
+    buf = io.BytesIO()
+    if has_alpha:
+        img.convert("RGBA").save(buf, format="WEBP", quality=90, method=6)
+        mime = "image/webp"
+    else:
+        img.convert("RGB").save(buf, format="JPEG", quality=86, optimize=True)
+        mime = "image/jpeg"
+    image_url = f"data:{mime};base64,{base64.b64encode(buf.getvalue()).decode('ascii')}"
+    ```
 - **B2. You CANNOT read local files** (fallback): the rest of this branch - text-card placeholders + a manifest the user swaps in the editor. Vision-free by design: the file-to-item mapping comes from the USER (filenames or their answers), not from you recognizing images. Do not call vision on the files - it burns tokens for nothing and is never required here.
 - Instead, build a **manifest table** — your working source of truth. **Recommend the user name each file after its item** (apple.png, 苹果.jpg, Claude.png) - pass this suggestion along as soon as they pick image mode (Step 0), so they can rename while the interview runs. When filenames match item names, fill the manifest straight from the names in one shot. Only if they DON'T match (files are 1.png, 2.png, IMG_3031.jpg...) do you ask the user, one item at a time, which file maps to which item/tier. Leave the `detail` column BLANK for now — it gets filled when Step 5 (commentary depth) runs later. Example:
 
